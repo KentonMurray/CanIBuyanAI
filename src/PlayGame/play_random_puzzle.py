@@ -13,6 +13,38 @@ def computer_turn(showing, winnings, previous_guesses, turn):
       if winnings[(turn % 3)] < 250:
         continue
       else:
+        print("Computer bought:", character)
+        winnings[(turn % 3)] = winnings[(turn % 3)] - 250
+        break
+    # Want to choose a consonant ... so spins wheel
+    dollar = spin_wheel()
+    if dollar == 0:
+      print("Computer lost a turn")
+      character = "_"
+      break
+    elif dollar == -1:
+      print("Computer went backrupt")
+      winnings[(turn % 3)] = 0
+      character = "_"
+      break
+    else:
+      print("Computer guessed:", character)
+      break
+  return character, dollar
+
+def computer_turn_morse(showing, winnings, previous_guesses, turn):
+  # Guess in the order that Samuel Morse identified for his code
+
+  alphabet = "EARIOTNSLCUDPMHGBFYWKVXZJQ"
+  dollar = 0
+  for character in alphabet:
+    if character in previous_guesses:
+      continue
+    if is_vowel(character):
+      if winnings[(turn % 3)] < 250:
+        continue
+      else:
+        print("Computer bought:", character)
         winnings[(turn % 3)] = winnings[(turn % 3)] - 250
         break
     # Want to choose a consonant ... so spins wheel
@@ -94,6 +126,7 @@ previous_guesses = []
 turn = 0
 
 winnings = [0,0,0]
+dollar = 0
 
 while showing != puzzle:
   # Ends wierd if last letter is guessed and not solved.# TODO
@@ -120,6 +153,7 @@ while showing != puzzle:
       else:
         print("Wrong ... next player")
         turn = turn + 1
+        print("The clue is:", clue)
         print_board(showing)
         continue
     elif decision == "2":
@@ -168,7 +202,7 @@ while showing != puzzle:
   elif turn % 3 == 1:
     guess, dollar = computer_turn(showing, winnings, previous_guesses, turn)
   elif turn % 3 == 2:
-    guess, dollar = computer_turn(showing, winnings, previous_guesses, turn)
+    guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
 
 
   # Update board
@@ -187,4 +221,5 @@ while showing != puzzle:
   for correct_letter in correct_places:
     showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
   print("Winnings:", winnings)
+  print("The clue is:", clue)
   print_board(showing)
