@@ -69,7 +69,12 @@ def print_board(showing):
 def spin_wheel():
   wheel_values = [0,-1,500,550,600,650,700,750,800,850,900,-1,500,550,600,650,700,750,800,850,900,500,550,600]
   # Note that the wheel changes over time ... free play now an 850. Different rounds, etc.
-  return random.choice(wheel_values)
+  print("Wheel is spinning ....")
+  print("It landed on ....")
+  time.sleep(2) # Drama!
+  dollar = random.choice(wheel_values)
+  print("....", dollar, "dollars")
+  return dollar
 
 
 # Play the game
@@ -135,12 +140,8 @@ while showing != puzzle:
       guess = vowel
       dollar = 0
     elif decision == "1":
-      print("Wheel is spinning ....")
-      print("It landed on ....")
-      time.sleep(2) # Drama!
       # Spin wheel
       dollar = spin_wheel()
-      print("....", dollar, "dollars")
       if dollar == 0:
         print("Sorry! Lose a turn. Next player")
         turn = turn + 1
