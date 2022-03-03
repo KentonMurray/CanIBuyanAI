@@ -1,5 +1,6 @@
 import random
 import re
+import time
 
 def get_random_puzzle():
   random_int = random.randint(0,900) # Roughly size of num puzzles in valid
@@ -43,41 +44,69 @@ print_board(showing)
 #    showing = showing + "\n"
 #print(showing)
 
+consonants = "BCDFGHJKLMNPQRSTVWXYZ"
+vowels = "AEIOU"
+
 # Play the game
 guess = ""
+previous_guesses = []
+turn = 1
 while showing != puzzle:
-  print("1: Spin, 2: Buy Vowel, 3: Solve")
-  decision = input()
-  #TODO: Assert it is 1 2 or 3
+
+  print("It is player", turn % 3, "'s turn")
+
+  # Player decisions
+  decision = input("1: Spin, 2: Buy Vowel, 3: Solve ....  ")
   if decision == "3":
-    print("Your guess:")
-    solve = input().upper() # TODO: clean
+    solve = input("Your guess to solve: ...... ").upper() # TODO: clean
     if solve == puzzle:
       print("YOU WIN!")
+      print("Player", turn % 3, "won!")
       exit()
     else:
       print("Wrong ... next player")
+      turn = turn + 1
       print_board(showing)
       continue
   elif decision == "2":
-    vowel = input().upper()
-    # TODO: Assert it is a vowel
+    is_one_vowel = False
+    while is_one_vowel != True:
+      vowel = input("Guess a vowel: ").upper()
+      if len(vowel) != 1:
+        print("Guess only one letter")
+      elif vowel not in vowels:
+        print("Not a vowel")
+      else:
+        is_one_vowel = True
     # Subtract winnings
     guess = vowel
   elif decision == "1":
     print("Wheel is spinning ....")
     print("It landed on ....")
+    time.sleep(2)
     # TODO: Spin wheel
-    print("Name a consonent")
-    guess = input().upper()
-    # TODO: Assert it is one character and A-Z
+    is_one_consonant = False
+    while is_one_consonant != True:
+      guess = input("Name a consonant .... ").upper()
+      if len(guess) != 1: 
+        print("Guess only one letter")
+      elif guess not in consonants:
+        print("Not a consonant")
+      else:
+        is_one_consonant = True
   else:
     print("Please choose 1, 2, or 3")
+
+  # Update board
+  previous_guesses.append(guess)
   correct_places = []
   for pos,char in enumerate(puzzle):
     if(char == guess):
         correct_places.append(pos)
   #print(correct_places)
+  if len(correct_places) < 1:
+    print("Sorry, not in the puzzle ... next player")
+    turn = turn + 1
   for correct_letter in correct_places:
     showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
   print_board(showing)
