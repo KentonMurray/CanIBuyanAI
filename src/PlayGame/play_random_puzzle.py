@@ -23,6 +23,12 @@ def print_board(showing):
     to_print = to_print + "\n"
   print(to_print)
 
+def spin_wheel():
+  wheel_values = [0,-1,500,550,600,650,700,750,800,850,900,-1,500,550,600,650,700,750,800,850,900,500,550,600]
+  # Note that the wheel changes over time ... free play now an 850. Different rounds, etc.
+  return random.choice(wheel_values)
+
+
 # Play the game
 puzzle, clue, date, game_type = get_random_puzzle()
 print("Welcome to Wheel of Fortune")
@@ -50,7 +56,10 @@ vowels = "AEIOU"
 # Play the game
 guess = ""
 previous_guesses = []
-turn = 1
+turn = 0
+
+winnings = [0,0,0]
+
 while showing != puzzle:
 
   print("It is player", turn % 3, "'s turn")
@@ -69,6 +78,10 @@ while showing != puzzle:
       print_board(showing)
       continue
   elif decision == "2":
+    if winnings[(turn % 3)] < 250: # Minimum cost of a vowel
+      print("Sorry .... you don't have enough money. Select 1 or 3")
+      continue
+    winnings[(turn % 3)] = winnings[(turn % 3)] - 250
     is_one_vowel = False
     while is_one_vowel != True:
       vowel = input("Guess a vowel: ").upper()
@@ -83,8 +96,19 @@ while showing != puzzle:
   elif decision == "1":
     print("Wheel is spinning ....")
     print("It landed on ....")
-    time.sleep(2)
-    # TODO: Spin wheel
+    time.sleep(2) # Drama!
+    # Spin wheel
+    dollar = spin_wheel()
+    print("....", dollar, "dollars")
+    if dollar == 0:
+      print("Sorry! Lose a turn. Next player")
+      turn = turn + 1
+      continue
+    elif dollar == -1:
+      print("Oh No! Bankrupt!")
+      winnings[(turn % 3)] = 0
+      turn = turn + 1
+      continue
     is_one_consonant = False
     while is_one_consonant != True:
       guess = input("Name a consonant .... ").upper()
@@ -107,6 +131,8 @@ while showing != puzzle:
   if len(correct_places) < 1:
     print("Sorry, not in the puzzle ... next player")
     turn = turn + 1
+  winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
   for correct_letter in correct_places:
     showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
+  print("Winnings:", winnings)
   print_board(showing)
