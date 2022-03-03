@@ -44,9 +44,35 @@ print_board(showing)
 #print(showing)
 
 # Play the game
+guess = ""
 while showing != puzzle:
-  guess = input().upper()
-  # TODO: Assert it is one character and A-Z
+  print("1: Spin, 2: Buy Vowel, 3: Solve")
+  decision = input()
+  #TODO: Assert it is 1 2 or 3
+  if decision == "3":
+    print("Your guess:")
+    solve = input().upper() # TODO: clean
+    if solve == puzzle:
+      print("YOU WIN!")
+      exit()
+    else:
+      print("Wrong ... next player")
+      print_board(showing)
+      continue
+  elif decision == "2":
+    vowel = input().upper()
+    # TODO: Assert it is a vowel
+    # Subtract winnings
+    guess = vowel
+  elif decision == "1":
+    print("Wheel is spinning ....")
+    print("It landed on ....")
+    # TODO: Spin wheel
+    print("Name a consonent")
+    guess = input().upper()
+    # TODO: Assert it is one character and A-Z
+  else:
+    print("Please choose 1, 2, or 3")
   correct_places = []
   for pos,char in enumerate(puzzle):
     if(char == guess):
