@@ -104,6 +104,8 @@ def get_random_puzzle():
       puzzle, clue, date, game_type = line.split(',')
       if number == random_int:
         #print(line)
+        clue = clue.replace("&amp;", "&") # HTML Code
+        puzzle = puzzle.replace("&amp;", "&") # HTML Code
         return(puzzle, clue, date, game_type)
       number = number + 1
 
