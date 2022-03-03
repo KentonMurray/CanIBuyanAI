@@ -234,6 +234,7 @@ while showing != puzzle:
           print("Not a consonant")
     else:
       print("Please choose 1, 2, or 3")
+      continue
 
   # Computer playing
   elif turn % 3 == 1:
