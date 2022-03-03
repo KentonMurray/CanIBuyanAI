@@ -34,6 +34,38 @@ def computer_turn(showing, winnings, previous_guesses, turn):
 
 def computer_turn_morse(showing, winnings, previous_guesses, turn):
   # Guess in the order that Samuel Morse identified for his code
+  alphabet = "ETAINOSHRDLUCMFWYGPBVKQJXZ"
+  dollar = 0
+  for character in alphabet:
+    if character in previous_guesses:
+      continue
+    if is_vowel(character):
+      if winnings[(turn % 3)] < 250:
+        continue
+      else:
+        print("Computer bought:", character)
+        winnings[(turn % 3)] = winnings[(turn % 3)] - 250
+        break
+    # Want to choose a consonant ... so spins wheel
+    dollar = spin_wheel()
+    if dollar == 0:
+      print("Computer lost a turn")
+      character = "_"
+      break
+    elif dollar == -1:
+      print("Computer went backrupt")
+      winnings[(turn % 3)] = 0
+      character = "_"
+      break
+    else:
+      print("Computer guessed:", character)
+      break
+  return character, dollar
+
+def computer_turn_oxford(showing, winnings, previous_guesses, turn):
+  # From dictionary ... that's game optimized word not occurance of words
+  # Concise Oxford Dictionary (9th edition, 1995) 
+  # https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
 
   alphabet = "EARIOTNSLCUDPMHGBFYWKVXZJQ"
   dollar = 0
@@ -200,7 +232,7 @@ while showing != puzzle:
 
   # Computer playing
   elif turn % 3 == 1:
-    guess, dollar = computer_turn(showing, winnings, previous_guesses, turn)
+    guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
   elif turn % 3 == 2:
     guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
 
