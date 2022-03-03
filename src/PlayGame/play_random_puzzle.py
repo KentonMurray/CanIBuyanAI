@@ -237,21 +237,27 @@ while showing != puzzle:
     guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
 
 
-  # Update board
-  previous_guesses.append(guess)
-  correct_places = []
-  for pos,char in enumerate(puzzle):
-    if(char == guess):
-        correct_places.append(pos)
-  #print(correct_places)
-  if guess == "_": # Hacky way to say the comp got it wrong
+  # Double check that guess has not already been said (I've seen it on TV before)
+  if guess in previous_guesses:
+    print("Sorry, that's already been guessed .... next player")
     turn = turn + 1
-  elif len(correct_places) < 1:
-    print("Sorry, not in the puzzle ... next player")
-    turn = turn + 1
+  else:
+    # Update board
+    previous_guesses.append(guess)
+    correct_places = []
+    for pos,char in enumerate(puzzle):
+      if(char == guess):
+          correct_places.append(pos)
+    #print(correct_places)
+    if guess == "_": # Hacky way to say the comp got it wrong
+      turn = turn + 1
+    elif len(correct_places) < 1:
+      print("Sorry, not in the puzzle ... next player")
+      turn = turn + 1
   winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
   for correct_letter in correct_places:
     showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
   print("Winnings:", winnings)
+  print("Previous guesses:", previous_guesses)
   print("The clue is:", clue)
   print_board(showing)
