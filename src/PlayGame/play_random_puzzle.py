@@ -159,6 +159,7 @@ turn = 0
 
 winnings = [0,0,0]
 dollar = 0
+is_solved = False
 
 while showing != puzzle:
   # Ends wierd if last letter is guessed and not solved.# TODO
@@ -181,7 +182,9 @@ while showing != puzzle:
         print("YOU WIN!")
         print("Player", turn % 3, "won!")
         print("Winnings:", winnings)
-        exit()
+        is_solved = True
+        #exit()
+        break
       else:
         print("Wrong ... next player")
         turn = turn + 1
@@ -261,3 +264,21 @@ while showing != puzzle:
   print("Previous guesses:", previous_guesses)
   print("The clue is:", clue)
   print_board(showing)
+
+while not is_solved:
+  print("Player", turn % 3, "has a chance to solve")
+  # If human, let them guess, otheerwise let computer guess
+  if turn % 3 == 0:
+    solve = input("Your guess to solve: ...... ").upper() # TODO: clean
+  else:
+    solve = showing
+  
+  if solve == puzzle:
+    print("Player", turn % 3, "won!")
+    print("Winnings:", winnings)
+    is_solved = True
+  else:
+    print("Wrong ... next player")
+    turn = turn + 1
+    print("The clue is:", clue)
+    print_board(showing)
