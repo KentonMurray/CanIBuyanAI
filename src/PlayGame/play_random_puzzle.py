@@ -1,5 +1,6 @@
 import random
 import re
+import sys
 import time
 
 def computer_turn(showing, winnings, previous_guesses, turn):
@@ -109,6 +110,82 @@ def get_random_puzzle():
         return(puzzle, clue, date, game_type)
       number = number + 1
 
+def human_turn(showing, winnings, previous_guesses, turn, puzzle):
+
+  # Make sure human chooses a valid action
+  deciding = False
+  while not deciding:
+    decision = input("1: Spin, 2: Buy Vowel, 3: Solve ....  ")
+    if decision == "1" or decision == "2" or decision == "3":
+      deciding = True
+      if decision == "2" and winnings[(turn % 3)] < 250: # Minimum cost of a vowel
+        print("Sorry .... you don't have enough money. Select 1 or 3")
+        deciding = False
+    else:
+      print("Please choose 1, 2, or 3")
+
+  # Player decisions
+  if decision == "3":
+    deciding = True
+    solve = input("Your guess to solve: ...... ").upper() # TODO: clean
+    if solve == puzzle:
+      print("YOU WIN!")
+      print("Player", turn % 3, "won!")
+      print("Winnings:", winnings)
+      is_solved = True
+      exit()
+      #break #TODO: not just exit here
+    else:
+      print("Wrong ... next player")
+      #turn = turn + 1
+      #print("The clue is:", clue)
+      #print_board(showing)
+      #continue
+      guess = "_"
+      dollar = 0
+  elif decision == "2":
+    winnings[(turn % 3)] = winnings[(turn % 3)] - 250
+    is_one_vowel = False
+    while is_one_vowel != True:
+      vowel = input("Guess a vowel: ").upper()
+      if len(vowel) != 1:
+        print("Guess only one letter")
+      else:
+        is_one_vowel = is_vowel(vowel)
+
+      if not is_one_vowel:
+        print("Not a vowel")
+    guess = vowel
+    dollar = 0
+  elif decision == "1":
+    # Spin wheel
+    dollar = spin_wheel()
+    guess = ""
+    if dollar == 0:
+      print("Sorry! Lose a turn. Next player")
+      #turn = turn + 1
+      #continue
+      guess = "_"
+    elif dollar == -1:
+      print("Oh No! Bankrupt!")
+      winnings[(turn % 3)] = 0
+      #turn = turn + 1
+      #continue
+      guess = "_"
+    is_one_consonant = False
+    if guess == "_":
+      is_one_consonant = True # Hacky way
+    while is_one_consonant != True:
+      guess = input("Name a consonant .... ").upper()
+      if len(guess) != 1: 
+        print("Guess only one letter")
+      else:
+        is_one_consonant = is_consonant(guess)
+
+      if not is_one_consonant:
+        print("Not a consonant")
+  return guess, dollar
+
 def is_consonant(guess):
   consonants = "BCDFGHJKLMNPQRSTVWXYZ"
   if guess in consonants:
@@ -143,145 +220,109 @@ def spin_wheel():
   return dollar
 
 
-# Play the game
-puzzle, clue, date, game_type = get_random_puzzle()
-print("Welcome to Wheel of Fortune")
-print("You are playing a game of type:", game_type)
-print("The clue is:", clue)
+def play_random_game(type_of_players):
 
-# Mask out word
-showing = puzzle
-showing = re.sub(r"[A-Z]","_",showing)
-print_board(showing)
-
-# Play the game
-guess = ""
-previous_guesses = []
-turn = 0
-
-winnings = [0,0,0]
-dollar = 0
-is_solved = False
-
-while showing != puzzle:
-  # Ends wierd if last letter is guessed and not solved.# TODO
-  print("It is player", turn % 3, "'s turn")
-
-  ## Computer playing
-  #if turn % 3 == 1:
-  #  #showing, winnings, previous_guesses = computer_turn(showing, winnings, previous_guesses, turn)
-  #  #turn = turn + 1
-  #  #print("Winnings:", winnings)
-  #  #print_board(showing)
-  #  #continue
-
-  # Player decisions
-  if turn % 3 == 0:
-    decision = input("1: Spin, 2: Buy Vowel, 3: Solve ....  ")
-    if decision == "3":
-      solve = input("Your guess to solve: ...... ").upper() # TODO: clean
-      if solve == puzzle:
-        print("YOU WIN!")
-        print("Player", turn % 3, "won!")
-        print("Winnings:", winnings)
-        is_solved = True
-        #exit()
-        break
-      else:
-        print("Wrong ... next player")
-        turn = turn + 1
-        print("The clue is:", clue)
-        print_board(showing)
-        continue
-    elif decision == "2":
-      if winnings[(turn % 3)] < 250: # Minimum cost of a vowel
-        print("Sorry .... you don't have enough money. Select 1 or 3")
-        continue
-      winnings[(turn % 3)] = winnings[(turn % 3)] - 250
-      is_one_vowel = False
-      while is_one_vowel != True:
-        vowel = input("Guess a vowel: ").upper()
-        if len(vowel) != 1:
-          print("Guess only one letter")
-        else:
-          is_one_vowel = is_vowel(vowel)
-
-        if not is_one_vowel:
-          print("Not a vowel")
-      guess = vowel
-      dollar = 0
-    elif decision == "1":
-      # Spin wheel
-      dollar = spin_wheel()
-      if dollar == 0:
-        print("Sorry! Lose a turn. Next player")
-        turn = turn + 1
-        continue
-      elif dollar == -1:
-        print("Oh No! Bankrupt!")
-        winnings[(turn % 3)] = 0
-        turn = turn + 1
-        continue
-      is_one_consonant = False
-      while is_one_consonant != True:
-        guess = input("Name a consonant .... ").upper()
-        if len(guess) != 1: 
-          print("Guess only one letter")
-        else:
-          is_one_consonant = is_consonant(guess)
-
-        if not is_one_consonant:
-          print("Not a consonant")
-    else:
-      print("Please choose 1, 2, or 3")
-      continue
-
-  # Computer playing
-  elif turn % 3 == 1:
-    guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
-  elif turn % 3 == 2:
-    guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
-
-
-  # Double check that guess has not already been said (I've seen it on TV before)
-  if guess in previous_guesses:
-    print("Sorry, that's already been guessed .... next player")
-    turn = turn + 1
-  else:
-    # Update board
-    previous_guesses.append(guess)
-    correct_places = []
-    for pos,char in enumerate(puzzle):
-      if(char == guess):
-          correct_places.append(pos)
-    #print(correct_places)
-    if guess == "_": # Hacky way to say the comp got it wrong
-      turn = turn + 1
-    elif len(correct_places) < 1:
-      print("Sorry, not in the puzzle ... next player")
-      turn = turn + 1
-  winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
-  for correct_letter in correct_places:
-    showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
-  print("Winnings:", winnings)
-  print("Previous guesses:", previous_guesses)
+  # Play the game
+  puzzle, clue, date, game_type = get_random_puzzle()
+  print("Welcome to Wheel of Fortune")
+  print("You are playing a game of type:", game_type)
   print("The clue is:", clue)
+
+  # Mask out word
+  showing = puzzle
+  showing = re.sub(r"[A-Z]","_",showing)
   print_board(showing)
 
-while not is_solved:
-  print("Player", turn % 3, "has a chance to solve")
-  # If human, let them guess, otheerwise let computer guess
-  if turn % 3 == 0:
-    solve = input("Your guess to solve: ...... ").upper() # TODO: clean
-  else:
-    solve = showing
-  
-  if solve == puzzle:
-    print("Player", turn % 3, "won!")
+  # Play the game
+  guess = ""
+  previous_guesses = []
+  turn = 0
+
+  winnings = [0,0,0]
+  dollar = 0
+  is_solved = False
+
+  while showing != puzzle:
+    time.sleep(2) # Let humans see what is going on
+    # Ends wierd if last letter is guessed and not solved.# TODO
+    print("It is player", turn % 3, "'s turn")
+
+    # Type of player
+    type_of_player = type_of_players[turn % 3]
+    print("This player is:", type_of_player)
+
+    if type_of_player == "human":
+      guess, dollar = human_turn(showing, winnings, previous_guesses, turn, puzzle)
+    elif type_of_player == "morse":
+      guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "oxford":
+      guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
+
+    ## Human playing
+    #if turn % 3 == 0:
+    #  guess, dollar = human_turn(showing, winnings, previous_guesses, turn, puzzle)
+    #
+    ## Computer playing
+    #elif turn % 3 == 1:
+    #  guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
+    #elif turn % 3 == 2:
+    #  guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
+
+
+    # Double check that guess has not already been said (I've seen it on TV before)
+    if guess in previous_guesses and guess != "_":
+      print("Sorry, that's already been guessed .... next player")
+      turn = turn + 1
+    else:
+      # Update board
+      previous_guesses.append(guess)
+      correct_places = []
+      for pos,char in enumerate(puzzle):
+        if(char == guess):
+            correct_places.append(pos)
+      #print(correct_places)
+      if guess == "_": # Hacky way to say the comp got it wrong or bankrupt, etc.
+        turn = turn + 1
+      elif len(correct_places) < 1:
+        print("Sorry, not in the puzzle ... next player")
+        turn = turn + 1
+    winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
+    for correct_letter in correct_places:
+      showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
     print("Winnings:", winnings)
-    is_solved = True
-  else:
-    print("Wrong ... next player")
-    turn = turn + 1
+    print("Previous guesses:", previous_guesses)
     print("The clue is:", clue)
     print_board(showing)
+
+  while not is_solved:
+    print("Player", turn % 3, "has a chance to solve")
+    # If human, let them guess, otheerwise let computer guess
+    if turn % 3 == 0:
+      solve = input("Your guess to solve: ...... ").upper() # TODO: clean
+    else:
+      solve = showing
+  
+    if solve == puzzle:
+      print("Player", turn % 3, "won!")
+      print("Winnings:", winnings)
+      is_solved = True
+    else:
+      print("Wrong ... next player")
+      turn = turn + 1
+      print("The clue is:", clue)
+      print_board(showing)
+
+if __name__ == '__main__':
+  type_of_players = sys.argv[1:]
+  print(type_of_players)
+  if len(type_of_players) != 3:
+    print("There should be 3 players ... creating a default game with one human for you")
+    type_of_players = ["human", "morse", "oxford"] # TODO: Set with command line
+    time.sleep(3)
+  #type_of_players = ["morse", "morse", "oxford"] # TODO: Set with command line
+
+  play_random_game(type_of_players)
+
+
+
+# TODO: Somehow when the comp buys E it messes things up ... (first letter for many strategies)
