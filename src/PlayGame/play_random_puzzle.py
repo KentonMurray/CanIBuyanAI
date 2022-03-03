@@ -297,7 +297,7 @@ def play_random_game(type_of_players):
   while not is_solved:
     print("Player", turn % 3, "has a chance to solve")
     # If human, let them guess, otheerwise let computer guess
-    if turn % 3 == 0:
+    if type_of_player[turn % 3] == "human":
       solve = input("Your guess to solve: ...... ").upper() # TODO: clean
     else:
       solve = showing
