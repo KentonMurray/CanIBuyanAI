@@ -96,6 +96,147 @@ def computer_turn_oxford(showing, winnings, previous_guesses, turn):
       break
   return character, dollar
 
+def computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn):
+
+  allow_vowels = False
+  if winnings[(turn % 3)] >= 250:
+    allow_vowels = True
+
+  candidate_trigrams = [] 
+  showing_words = showing.split(' ')
+  for word in showing_words:
+    index = 0
+    while index < (len(word) - 2):
+      trigram = word[index:index+3]
+      #print(trigram)
+      if trigram[2] == "_" and "_" != trigram[0] and "_" != trigram[1]:
+        candidate_trigrams.append(trigram)
+      index = index + 1
+
+  candidate_bigrams = [] 
+  for word in showing_words:
+    index = 0
+    while index < (len(word) - 1):
+      bigram = word[index:index+2]
+      #print(bigram)
+      if "_" != bigram[0] and bigram[1] == "_":
+        candidate_bigrams.append(bigram)
+      index = index + 1
+
+  #print(candidate_trigrams)
+  #print(candidate_bigrams)
+
+  dollar = 0
+  guess = "_"
+
+  # Frewquencies from: http://mathcenter.oxford.emory.edu/site/math125/englishLetterFreqs/#:~:text=Most%20common%20bigrams%20(in%20order,%2C%20sa%2C%20em%2C%20ro.
+
+  #Most common trigrams (in order)
+  trigrams = ["THE", "AND", "THA", "ENT", "ING", "ION", "TIO", "FOR", "NDE", "HAS", "NCE", "EDT", "TIS", "OFT", "STH", "MEN"]
+  for trigram in trigrams:
+    to_match = trigram[0:2] + "_"
+    #print("TOMatch", to_match)
+    if to_match in candidate_trigrams:
+      candidate = trigram[2]
+      #print("CANDIDATE", candidate)
+      if is_vowel(candidate) and allow_vowels == False:
+        #print("can't vowel")
+        continue
+      elif candidate in previous_guesses:
+        #print("already guessed")
+        continue
+      else:
+        guess = candidate
+        #print("Actual CANDIDATE", candidate)
+        break
+  if guess != "_":
+    if is_vowel(guess):
+      print("Computer bought:", guess)
+      winnings[(turn % 3)] = winnings[(turn % 3)] - 250
+      return guess, dollar # Should be a vowel and 0 since we've already subtraced
+    else:
+      dollar = spin_wheel()
+      if dollar == 0:
+        print("Computer lost a turn")
+        guess = "_"
+      elif dollar == -1:
+        print("Computer went backrupt")
+        winnings[(turn % 3)] = 0
+        guess = "_"
+      else:
+        print("Computer guessed:", guess)
+      return guess, dollar
+
+  #print("No trigrams ... backing off to bigrams")
+
+  #Most common bigrams (in order)
+  bigrams = ["TH", "HE", "IN", "EN", "NT", "RE", "ER", "AN", "TI", "ES", "ON", "AT", "SE", "ND", "OR", "AR", "AL", "TE", "CO", "DE", "TO", "RA", "ET", "ED", "IT", "SA", "EM", "RO"]
+  for bigram in bigrams:
+    to_match = bigram[0] + "_"
+    #print(to_match)
+    if to_match in candidate_bigrams:
+      candidate = trigram[1]
+      #print("CANDIDATE", candidate)
+      if is_vowel(candidate) and allow_vowels == False:
+        #print("can't vowel")
+        continue
+      elif candidate in previous_guesses:
+        #print("already guessed")
+        continue
+      else:
+        guess = candidate
+        #print("Actual CANDIDATE", candidate)
+        break
+  if guess != "_":
+    if is_vowel(guess):
+      print("Computer bought:", guess)
+      winnings[(turn % 3)] = winnings[(turn % 3)] - 250
+      return guess, dollar # Should be a vowel and 0 since we've already subtraced
+    else:
+      dollar = spin_wheel()
+      if dollar == 0:
+        print("Computer lost a turn")
+        guess = "_"
+      elif dollar == -1:
+        print("Computer went backrupt")
+        winnings[(turn % 3)] = 0
+        guess = "_"
+      else:
+        print("Computer guessed:", guess)
+      return guess, dollar
+
+  #print("No bigrams ... backing off to unigrams")
+
+  # Unigrams are from the oxford strategy above
+  alphabet = "EARIOTNSLCUDPMHGBFYWKVXZJQ"
+
+
+  for character in alphabet:
+    if character in previous_guesses:
+      continue
+    if is_vowel(character):
+      if winnings[(turn % 3)] < 250:
+        continue
+      else:
+        print("Computer bought:", character)
+        winnings[(turn % 3)] = winnings[(turn % 3)] - 250
+        break
+    # Want to choose a consonant ... so spins wheel
+    dollar = spin_wheel()
+    if dollar == 0:
+      print("Computer lost a turn")
+      character = "_"
+      break
+    elif dollar == -1:
+      print("Computer went backrupt")
+      winnings[(turn % 3)] = 0
+      character = "_"
+      break
+    else:
+      print("Computer guessed:", character)
+      break
+  return character, dollar
+
 def get_random_puzzle():
   random_int = random.randint(0,900) # Roughly size of num puzzles in valid
   number = 0
@@ -257,6 +398,8 @@ def play_random_game(type_of_players):
       guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
     elif type_of_player == "oxford":
       guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "trigram":
+      guess, dollar = computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn)
 
     ## Human playing
     #if turn % 3 == 0:
