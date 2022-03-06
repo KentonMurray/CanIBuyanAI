@@ -170,12 +170,22 @@ def computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn):
   #print("No trigrams ... backing off to bigrams")
 
   #Most common bigrams (in order)
-  bigrams = ["TH", "HE", "IN", "EN", "NT", "RE", "ER", "AN", "TI", "ES", "ON", "AT", "SE", "ND", "OR", "AR", "AL", "TE", "CO", "DE", "TO", "RA", "ET", "ED", "IT", "SA", "EM", "RO"]
+  #frequent bigrams from a file ... http://practicalcryptography.com/media/cryptanalysis/files/english_bigrams_1.txt Only want first 128
+  #bigrams = ["TH", "HE", "IN", "EN", "NT", "RE", "ER", "AN", "TI", "ES", "ON", "AT", "SE", "ND", "OR", "AR", "AL", "TE", "CO", "DE", "TO", "RA", "ET", "ED", "IT", "SA", "EM", "RO"]
+  bigrams = []
+  with open("bigrams.txt") as g:
+    for line in g:
+      line = line.rstrip('\n')
+      bigram = line.split(' ')[0].upper()
+      bigrams.append(bigram)
+      if len(bigrams) == 128:
+        break # Arbitrary threshold to use
+  #print(bigrams)
   for bigram in bigrams:
     to_match = bigram[0] + "_"
     #print(to_match)
     if to_match in candidate_bigrams:
-      candidate = trigram[1]
+      candidate = bigram[1]
       #print("CANDIDATE", candidate)
       if is_vowel(candidate) and allow_vowels == False:
         #print("can't vowel")
@@ -439,6 +449,7 @@ def play_random_game(type_of_players):
 
   while not is_solved:
     print("Player", turn % 3, "has a chance to solve")
+    type_of_player = type_of_players[turn % 3] # wouldn't have hit this above
     # If human, let them guess, otheerwise let computer guess
     if type_of_player == "human":
       solve = input("Your guess to solve: ...... ").upper() # TODO: clean
