@@ -27,6 +27,8 @@ python3 play_random_puzzle.py human morse oxford
 python3 play_random_puzzle.py
 ```
 
+Tip: To visualize the wheel segment values used by the game, see the [ASCII Wheel](#ascii-wheel-optional) section below.
+
 ## ASCII Wheel (Optional)
 
 Render an ASCII-art wheel of the segment values:
