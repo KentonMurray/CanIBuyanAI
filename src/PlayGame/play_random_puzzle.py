@@ -2,6 +2,7 @@ import random
 import re
 import sys
 import time
+import ascii_wheel
 
 def computer_turn(showing, winnings, previous_guesses, turn):
   # Guess in the order of the alphabet
@@ -366,6 +367,7 @@ def spin_wheel():
   print("Wheel is spinning ....")
   print("It landed on ....")
   time.sleep(2) # Drama!
+  ascii_wheel.draw_ascii_wheel(wheel_values, radius=18, label_style="long")
   dollar = random.choice(wheel_values)
   print("....", dollar, "dollars")
   return dollar
