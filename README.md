@@ -1,9 +1,13 @@
 # CanIBuyanAI
-This is project that tries to solve Wheel of Fortune Puzzles
+This project tries to solve Wheel of Fortune puzzles.
 
 ## Requirements
-tested using python 3.6
+Tested using Python 3.6.
 
-### Scraper
-pip install requests
-pip install beautifulsoup4
+## Scraper
+See the [Puzzle Scraper README](./src/PuzzleScraper/README.md) for details.
+
+Install the scraper dependencies:
+```bash
+pip install requests beautifulsoup4
+```
