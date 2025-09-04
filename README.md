@@ -15,8 +15,9 @@ pip install requests beautifulsoup4
 
 Play a random Wheel of Fortune puzzle against simple computer strategies using [play_random_puzzle.py](./src/PlayGame/play_random_puzzle.py).
 
-- Player types: `human`, `morse`, `oxford`, `trigram`
+- Player types: `human`, `morse`, `oxford`, `trigram`, `smart`, `conservative`, `aggressive`
 - As a human, you’ll be prompted each turn: 1 = Spin, 2 = Buy Vowel, 3 = Solve
+- Smart AI players (`smart`, `conservative`, `aggressive`) use advanced decision-making logic to optimize spin vs buy vowel choices
 - Run from the `src/PlayGame` directory so relative paths resolve (uses `../../data/puzzles/valid.csv` and `bigrams.txt`)
 
 Example:
