@@ -3,6 +3,7 @@ import re
 import sys
 import time
 import ascii_wheel
+from smart_player import computer_turn_smart, computer_turn_smart_conservative, computer_turn_smart_aggressive
 
 def computer_turn(showing, winnings, previous_guesses, turn):
   # Guess in the order of the alphabet
@@ -407,11 +408,17 @@ def play_random_game(type_of_players):
     if type_of_player == "human":
       guess, dollar = human_turn(showing, winnings, previous_guesses, turn, puzzle)
     elif type_of_player == "morse":
-      guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
+      guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
     elif type_of_player == "oxford":
       guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
     elif type_of_player == "trigram":
       guess, dollar = computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "smart":
+      guess, dollar = computer_turn_smart(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "conservative":
+      guess, dollar = computer_turn_smart_conservative(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "aggressive":
+      guess, dollar = computer_turn_smart_aggressive(showing, winnings, previous_guesses, turn)
 
     ## Human playing
     #if turn % 3 == 0:
@@ -472,8 +479,9 @@ if __name__ == '__main__':
   type_of_players = sys.argv[1:]
   print(type_of_players)
   if len(type_of_players) != 3:
-    print("There should be 3 players ... creating a default game with one human for you")
-    type_of_players = ["human", "morse", "oxford"] # TODO: Set with command line
+    print("There should be 3 players ... creating a default game with smart AI players")
+    print("Available player types: human, morse, oxford, trigram, smart, conservative, aggressive")
+    type_of_players = ["human", "smart", "conservative"] # Updated default with smart players
     time.sleep(3)
   #type_of_players = ["morse", "morse", "oxford"] # TODO: Set with command line
 
