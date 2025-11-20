@@ -148,8 +148,8 @@ class WheelOfFortuneOptimizer:
         estimated_consonants = blank_count - estimated_vowels
         
         # Best letter recommendations
-        best_vowel = max(available_vowels.keys(), key=lambda x: available_vowels[x]) if available_vowels else 'E'
-        best_consonant = max(available_consonants.keys(), key=lambda x: available_consonants[x]) if available_consonants else 'T'
+        best_vowel = max(available_vowels.keys(), key=lambda x: available_vowels[x]) if available_vowels else None
+        best_consonant = max(available_consonants.keys(), key=lambda x: available_consonants[x]) if available_consonants else None
         
         return LetterAnalysis(
             vowel_probability=available_vowels,
@@ -177,9 +177,9 @@ class WheelOfFortuneOptimizer:
         # Expected value = wheel value * probability of success * estimated letters
         spin_ev = base_ev * wheel_analysis.success_probability * estimated_letters
         
-        # Subtract risk penalties
-        bankruptcy_penalty = game_state.player_winnings * wheel_analysis.bankruptcy_probability
-        lose_turn_penalty = 100 * wheel_analysis.lose_turn_probability  # Opportunity cost
+        # Subtract risk penalties - make more conservative
+        bankruptcy_penalty = game_state.player_winnings * wheel_analysis.bankruptcy_probability * 1.5  # More conservative
+        lose_turn_penalty = 300 * wheel_analysis.lose_turn_probability  # Higher opportunity cost
         
         return spin_ev - bankruptcy_penalty - lose_turn_penalty
     
@@ -187,6 +187,10 @@ class WheelOfFortuneOptimizer:
         """Calculate expected value of buying a vowel."""
         if game_state.player_winnings < self.vowel_cost:
             return -float('inf')  # Can't afford it
+        
+        # Check if any vowels are available
+        if not letter_analysis.best_vowel or not letter_analysis.vowel_probability:
+            return -float('inf')  # No vowels available
         
         # Estimate probability that vowel appears in puzzle
         vowel_density = letter_analysis.expected_vowel_count / max(1, game_state.showing.count('_'))
@@ -283,7 +287,7 @@ class WheelOfFortuneOptimizer:
                 risk_level = 'low'
                 confidence += 0.1
                 
-            letter_suggestion = letter_analysis.best_consonant
+            letter_suggestion = letter_analysis.best_consonant or 'T'  # Fallback to T
             
         elif best_action == 'buy_vowel':
             reasoning.append(f"Buying vowel has highest expected value: ${best_ev:.0f}")
@@ -293,7 +297,7 @@ class WheelOfFortuneOptimizer:
             
             risk_level = 'low'  # Buying vowels is low risk
             confidence += 0.1
-            letter_suggestion = letter_analysis.best_vowel
+            letter_suggestion = letter_analysis.best_vowel or 'E'  # Fallback to E
             
         else:  # solve
             completion_ratio = (len(re.sub(r'[^A-Z_]', '', game_state.showing)) - game_state.showing.count('_')) / len(re.sub(r'[^A-Z_]', '', game_state.showing))

@@ -67,7 +67,7 @@ class OptimizedPlayer:
             print(f"  • {reason}")
         
         # Execute the decision
-        return self._execute_decision(adjusted_action, recommendation, winnings, turn)
+        return self._execute_decision(adjusted_action, recommendation, winnings, turn, previous_guesses)
     
     def _apply_personality_adjustments(self, recommendation, game_state):
         """Apply personality-based adjustments to the recommendation."""
@@ -100,16 +100,29 @@ class OptimizedPlayer:
         
         return action
     
-    def _execute_decision(self, action, recommendation, winnings, turn):
+    def _execute_decision(self, action, recommendation, winnings, turn, previous_guesses):
         """Execute the decided action."""
         current_player = turn % 3
         
         if action == 'buy_vowel':
-            # Buy the recommended vowel
-            vowel = recommendation.letter_suggestion or 'E'
-            print(f"Optimized AI bought vowel: {vowel}")
-            winnings[current_player] -= 250
-            return vowel, 0
+            # Buy the recommended vowel, but double-check it's available
+            vowel = recommendation.letter_suggestion
+            
+            if not vowel or vowel in previous_guesses:
+                # Find first available vowel
+                for v in ['E', 'A', 'O', 'I', 'U']:
+                    if v not in previous_guesses:
+                        vowel = v
+                        break
+                else:
+                    # No vowels available, fall back to spinning
+                    print("Optimized AI: No vowels available, spinning instead")
+                    action = 'spin'
+            
+            if action == 'buy_vowel':
+                print(f"Optimized AI bought vowel: {vowel}")
+                winnings[current_player] -= 250
+                return vowel, 0
         
         elif action == 'solve':
             # For now, we'll fall back to spinning since solve logic is complex
@@ -130,7 +143,18 @@ class OptimizedPlayer:
                 winnings[current_player] = 0
                 return "_", 0
             else:
-                consonant = recommendation.letter_suggestion or 'T'
+                # Get best available consonant
+                consonant = recommendation.letter_suggestion
+                if not consonant or consonant in previous_guesses:
+                    # Find first available consonant
+                    consonants = ['T', 'N', 'S', 'H', 'R', 'D', 'L', 'C', 'M', 'W', 'F', 'G', 'Y', 'P', 'B', 'V', 'K', 'J', 'X', 'Q', 'Z']
+                    for c in consonants:
+                        if c not in previous_guesses:
+                            consonant = c
+                            break
+                    else:
+                        consonant = 'T'  # Ultimate fallback
+                
                 print(f"Optimized AI guessed consonant: {consonant}")
                 return consonant, dollar
 
