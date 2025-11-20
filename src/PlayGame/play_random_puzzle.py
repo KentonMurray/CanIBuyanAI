@@ -4,6 +4,7 @@ import sys
 import time
 import ascii_wheel
 from smart_player import computer_turn_smart, computer_turn_smart_conservative, computer_turn_smart_aggressive
+from optimized_player import computer_turn_optimized, computer_turn_optimized_aggressive, computer_turn_optimized_conservative, get_human_suggestion
 
 def computer_turn(showing, winnings, previous_guesses, turn):
   # Guess in the order of the alphabet
@@ -265,17 +266,36 @@ def get_random_puzzle():
 
 def human_turn(showing, winnings, previous_guesses, turn, puzzle):
 
+  # Offer AI suggestion
+  print("\n" + "="*50)
+  print("🤖 Would you like an AI suggestion? (y/n)")
+  suggestion_choice = input().lower().strip()
+  if suggestion_choice == 'y' or suggestion_choice == 'yes':
+    try:
+      suggestion = get_human_suggestion(showing, winnings, previous_guesses, turn)
+      print(suggestion)
+    except Exception as e:
+      print(f"Sorry, couldn't generate suggestion: {e}")
+  print("="*50)
+
   # Make sure human chooses a valid action
   deciding = False
   while not deciding:
-    decision = input("1: Spin, 2: Buy Vowel, 3: Solve ....  ")
+    decision = input("1: Spin, 2: Buy Vowel, 3: Solve, 4: Get AI Suggestion ....  ")
     if decision == "1" or decision == "2" or decision == "3":
       deciding = True
       if decision == "2" and winnings[(turn % 3)] < 250: # Minimum cost of a vowel
         print("Sorry .... you don't have enough money. Select 1 or 3")
         deciding = False
+    elif decision == "4":
+      # Show AI suggestion again
+      try:
+        suggestion = get_human_suggestion(showing, winnings, previous_guesses, turn)
+        print(suggestion)
+      except Exception as e:
+        print(f"Sorry, couldn't generate suggestion: {e}")
     else:
-      print("Please choose 1, 2, or 3")
+      print("Please choose 1, 2, 3, or 4")
 
   # Player decisions
   if decision == "3":
@@ -419,6 +439,12 @@ def play_random_game(type_of_players):
       guess, dollar = computer_turn_smart_conservative(showing, winnings, previous_guesses, turn)
     elif type_of_player == "aggressive":
       guess, dollar = computer_turn_smart_aggressive(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "optimized":
+      guess, dollar = computer_turn_optimized(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "opt_aggressive":
+      guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "opt_conservative":
+      guess, dollar = computer_turn_optimized_conservative(showing, winnings, previous_guesses, turn)
 
     ## Human playing
     #if turn % 3 == 0:
@@ -479,9 +505,12 @@ if __name__ == '__main__':
   type_of_players = sys.argv[1:]
   print(type_of_players)
   if len(type_of_players) != 3:
-    print("There should be 3 players ... creating a default game with smart AI players")
-    print("Available player types: human, morse, oxford, trigram, smart, conservative, aggressive")
-    type_of_players = ["human", "smart", "conservative"] # Updated default with smart players
+    print("There should be 3 players ... creating a default game with optimized AI players")
+    print("Available player types:")
+    print("  Basic: human, morse, oxford, trigram")
+    print("  Smart: smart, conservative, aggressive")
+    print("  Optimized: optimized, opt_conservative, opt_aggressive")
+    type_of_players = ["human", "optimized", "opt_conservative"] # Updated default with optimized players
     time.sleep(3)
   #type_of_players = ["morse", "morse", "oxford"] # TODO: Set with command line
 

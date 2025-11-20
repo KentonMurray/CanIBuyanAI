@@ -30,6 +30,63 @@ python3 play_random_puzzle.py
 
 Tip: To visualize the wheel segment values used by the game, see the [ASCII Wheel](#ascii-wheel-optional) section below.
 
+## 🆕 NEW: Advanced AI Optimization Features
+
+This project now includes a comprehensive AI optimization system that provides strategic suggestions for Wheel of Fortune gameplay!
+
+### 🤖 Optimized AI Players
+
+Three new AI player types with advanced decision-making:
+- `optimized` - Balanced strategy with comprehensive analysis
+- `opt_conservative` - Risk-averse approach, preserves winnings
+- `opt_aggressive` - High-risk/high-reward strategy
+
+### 🧠 AI Features
+
+**Probability Analysis:**
+- Calculates exact wheel spin probabilities (bankruptcy: 8.3%, lose turn: 4.2%, success: 87.5%)
+- Expected value calculations for all possible actions
+- Risk vs reward analysis based on current game state
+
+**Strategic Analysis:**
+- Competitive positioning (leading vs trailing analysis)
+- Optimal timing for solving puzzles
+- Letter frequency analysis and recommendations
+- Financial impact assessment
+
+**Human Player Support:**
+- Press **4** during your turn to get AI suggestions
+- Detailed reasoning for each recommendation
+- Confidence scores and risk levels
+- Alternative action suggestions
+
+### 🎯 Quick Start with Optimized AI
+
+```bash
+cd src/PlayGame
+
+# Play against optimized AI with suggestions
+python3 play_random_puzzle.py human optimized opt_conservative
+
+# Demo all optimization features
+python3 demo_optimizer.py
+
+# Test different AI personalities
+python3 optimized_player.py
+```
+
+### 📊 What the AI Considers
+
+The optimization system analyzes:
+- **Wheel Probabilities**: Bankruptcy risk, lose turn risk, expected values
+- **Letter Analysis**: Frequency-based recommendations for vowels and consonants  
+- **Competitive Position**: Your standing vs opponents, urgency factors
+- **Game Stage**: Early game (vowel focus) vs late game (solving focus)
+- **Financial Situation**: Risk tolerance based on current winnings
+- **Puzzle Completion**: Optimal timing for solve attempts
+
+Try it out and see how the AI can help optimize your Wheel of Fortune strategy!
+
 ## ASCII Wheel (Optional)
 
 Render an ASCII-art wheel of the segment values:
