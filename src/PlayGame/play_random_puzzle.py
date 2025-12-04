@@ -445,12 +445,22 @@ def play_random_game(type_of_players):
       guess, dollar = computer_turn_smart_conservative(showing, winnings, previous_guesses, turn)
     elif type_of_player == "aggressive":
       guess, dollar = computer_turn_smart_aggressive(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "optimized":
+      guess, dollar = computer_turn_optimized(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "opt_aggressive":
+      guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "opt_conservative":
+      guess, dollar = computer_turn_optimized_conservative(showing, winnings, previous_guesses, turn)
     elif type_of_player == "solve_timing":
       guess, dollar = computer_turn_solve_timing_balanced(showing, winnings, previous_guesses, turn, puzzle, game_type)
     elif type_of_player == "solve_conservative":
       guess, dollar = computer_turn_solve_timing_conservative(showing, winnings, previous_guesses, turn, puzzle, game_type)
     elif type_of_player == "solve_aggressive":
       guess, dollar = computer_turn_solve_timing_aggressive(showing, winnings, previous_guesses, turn, puzzle, game_type)
+    else:
+      # Default case for unrecognized player types - use basic computer turn
+      print(f"Warning: Unknown player type '{type_of_player}', using default computer turn")
+      guess, dollar = computer_turn(showing, winnings, previous_guesses, turn)
 
     ## Human playing
     #if turn % 3 == 0:

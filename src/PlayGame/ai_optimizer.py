@@ -115,12 +115,17 @@ class WheelOfFortuneOptimizer:
         
         total_segments = len(self.wheel_values)
         
-        expected_value = sum(positive_values) / total_segments
+        # Calculate proper expected value: sum of (value * probability) for all outcomes
+        # For positive values: gain that amount per letter
+        # For lose turn (0): gain nothing, lose turn
+        # For bankrupt (-1): lose all current winnings
+        expected_value = sum(positive_values) / total_segments  # Only positive outcomes contribute to expected gain
+        
         bankruptcy_prob = bankrupt_count / total_segments
         lose_turn_prob = lose_turn_count / total_segments
         success_prob = len(positive_values) / total_segments
         high_value_prob = high_value_count / total_segments
-        avg_positive = sum(positive_values) / len(positive_values)
+        avg_positive = sum(positive_values) / len(positive_values) if positive_values else 0
         
         # Risk score: higher is riskier
         risk_score = (bankruptcy_prob * 2.0) + (lose_turn_prob * 1.0)
@@ -176,8 +181,8 @@ class WheelOfFortuneOptimizer:
     def calculate_spin_expected_value(self, game_state: GameState, wheel_analysis: WheelAnalysis, 
                                     letter_analysis: LetterAnalysis) -> float:
         """Calculate expected value of spinning the wheel."""
-        # Base expected value from wheel
-        base_ev = wheel_analysis.expected_value
+        # Get the best consonant and its estimated frequency in the puzzle
+        best_consonant = letter_analysis.best_consonant
         
         # If no consonants available, return very low value
         if not letter_analysis.consonant_probability:
@@ -201,16 +206,24 @@ class WheelOfFortuneOptimizer:
         
         # As puzzle gets more complete, fewer letters per guess expected
         base_letters_estimate = max(1, 3 - (completion_ratio * 2))
-        estimated_letters = min(blank_count, base_letters_estimate * best_consonant_freq * 1.5)
+        estimated_occurrences = min(blank_count, base_letters_estimate * best_consonant_freq * 1.5)
         
-        # Expected value = wheel value * probability of success * estimated letters
-        spin_ev = base_ev * wheel_analysis.success_probability * estimated_letters
+        # Expected value calculation:
+        # P(success) * average_wheel_value * estimated_letter_count - P(fail) * penalties
+        success_gain = (wheel_analysis.success_probability * 
+                       wheel_analysis.average_positive_value * 
+                       estimated_occurrences)
         
-        # Subtract risk penalties - make more conservative
-        bankruptcy_penalty = game_state.player_winnings * wheel_analysis.bankruptcy_probability * 1.5
-        lose_turn_penalty = 300 * wheel_analysis.lose_turn_probability
+        # Risk penalties
+        bankruptcy_penalty = (wheel_analysis.bankruptcy_probability * 
+                            game_state.player_winnings)  # Lose all current winnings
         
-        return spin_ev - bankruptcy_penalty - lose_turn_penalty
+        lose_turn_penalty = (wheel_analysis.lose_turn_probability * 
+                           wheel_analysis.average_positive_value * 0.5)  # Opportunity cost
+        
+        total_expected_value = success_gain - bankruptcy_penalty - lose_turn_penalty
+        
+        return max(0, total_expected_value)  # Don't return negative expected values
     
     def calculate_vowel_expected_value(self, game_state: GameState, letter_analysis: LetterAnalysis) -> float:
         """Calculate expected value of buying a vowel."""
