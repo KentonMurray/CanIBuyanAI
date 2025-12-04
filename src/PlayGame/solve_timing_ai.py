@@ -92,7 +92,7 @@ class SolveTimingAI:
             return 'solve', 0, solve_guess
         
         # Step 2: If not solving, decide between spin and buy vowel
-        spin_or_vowel_decision, reasoning = should_spin_or_buy_vowel(
+        spin_or_vowel_decision, reasoning, best_consonant = should_spin_or_buy_vowel(
             showing, player_winnings, previous_guesses
         )
         
@@ -202,9 +202,10 @@ def computer_turn_solve_timing_ai(
         ai_instance = SolveTimingAI()
     
     try:
-        action, dollar_value, solve_guess = ai_instance.make_turn_decision(
+        result = ai_instance.make_turn_decision(
             showing, winnings, previous_guesses, turn, puzzle, category
         )
+        action, dollar_value, solve_guess = result
         
         if action == 'solve':
             # Return solve attempt in a format the game engine can recognize

@@ -478,6 +478,7 @@ def play_random_game(type_of_players):
       solve_guess = guess[6:]  # Remove 'SOLVE:' prefix
       print(f"Player {turn % 3} attempts to solve: '{solve_guess}'")
       if solve_guess == puzzle:
+        winnings[turn % 3] += 1000  # Add $1000 bonus for solving
         print(f"CORRECT! Player {turn % 3} solved the puzzle!")
         print("Final winnings:", winnings)
         return turn % 3  # Return winner
