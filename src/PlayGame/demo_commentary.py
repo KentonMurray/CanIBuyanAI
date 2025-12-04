@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Demo script for the Interactive Host Commentary System
 Shows the system in action without requiring user input

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Enhanced Wheel of Fortune Game with Interactive Host Commentary
 Integrates Pat Sajak commentary and player personalities into the game
