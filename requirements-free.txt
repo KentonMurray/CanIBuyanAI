@@ -1,0 +1,9 @@
+# FREE VERSION - No external dependencies required!
+# The Interactive Host System works with Python's built-in libraries only
+
+# Optional: For enhanced local AI models (still free!)
+# transformers>=4.21.0
+# torch>=1.12.0
+
+# Optional: For premium ChatGPT experience (requires API key and payment)
+# openai>=2.9.0

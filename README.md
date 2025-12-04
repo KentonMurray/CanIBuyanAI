@@ -1,8 +1,31 @@
 # CanIBuyanAI
 This project tries to solve Wheel of Fortune puzzles.
 
+## 🎪 NEW: Interactive Host System
+Experience Wheel of Fortune with **Pat Sajak commentary** and **player personalities**! 
+
+🎙️ **Features:**
+- Pat Sajak-style commentary for every game action
+- 50+ unique player personalities with traits and catchphrases  
+- Interactive commentary system (you can comment too!)
+- ChatGPT integration for natural AI commentary
+- Victory speeches that reference your gameplay
+
+🚀 **Quick Start:**
+```bash
+cd src/PlayGame
+python3 play_with_commentary.py        # Play with commentary
+python3 demo_commentary.py             # See a demo
+python3 play_with_commentary.py --no-commentary  # Classic mode
+```
+
+📖 **Full Documentation:** See [INTERACTIVE_HOST_README.md](INTERACTIVE_HOST_README.md)
+
 ## Requirements
-Tested using Python 3.6.
+Tested using Python 3.6+. For the Interactive Host System:
+```bash
+pip install -r requirements.txt
+```
 
 ## Scraper
 See the [Puzzle Scraper README](./src/PuzzleScraper/README.md) for details.
