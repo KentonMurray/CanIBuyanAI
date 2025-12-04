@@ -389,6 +389,51 @@ header h1 {
     margin-top: 15px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     min-height: 30px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.wheel-result.bankrupt {
+    background: rgba(220, 20, 60, 0.8);
+    color: white;
+    font-size: 1.8rem;
+    animation: bankruptFlash 2s ease-in-out;
+    border: 2px solid #dc143c;
+}
+
+.wheel-result.lose-turn {
+    background: rgba(255, 140, 0, 0.8);
+    color: white;
+    font-size: 1.8rem;
+    animation: loseTurnFlash 2s ease-in-out;
+    border: 2px solid #ff8c00;
+}
+
+.wheel-result.money {
+    background: rgba(0, 128, 0, 0.8);
+    color: #ffd700;
+    font-size: 1.8rem;
+    animation: moneyFlash 1s ease-in-out;
+    border: 2px solid #008000;
+}
+
+@keyframes bankruptFlash {
+    0%, 100% { transform: scale(1); }
+    25%, 75% { transform: scale(1.1); box-shadow: 0 0 20px rgba(220, 20, 60, 0.8); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes loseTurnFlash {
+    0%, 100% { transform: scale(1); }
+    25%, 75% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 140, 0, 0.8); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes moneyFlash {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(0, 128, 0, 0.6); }
 }
 
 /* Puzzle Section */

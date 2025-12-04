@@ -379,16 +379,28 @@ class WheelOfFortuneGame {
             
         } catch (error) {
             console.error('Error spinning wheel:', error);
-            // Fallback local spin
-            const values = [500, 600, 700, 800, 900, 0, -1]; // 0 = lose turn, -1 = bankrupt
-            const result = values[Math.floor(Math.random() * values.length)];
+            // Fallback local spin with more realistic wheel values
+            const wheelValues = [
+                { type: 'money', value: 500 },
+                { type: 'money', value: 600 },
+                { type: 'money', value: 700 },
+                { type: 'money', value: 800 },
+                { type: 'money', value: 900 },
+                { type: 'money', value: 1000 },
+                { type: 'money', value: 2500 },
+                { type: 'lose_turn', value: 0 },
+                { type: 'bankrupt', value: 0 }
+            ];
+            
+            const result = wheelValues[Math.floor(Math.random() * wheelValues.length)];
             
             setTimeout(() => {
                 wheelImg.classList.remove('spinning');
                 this.handleSpinResult({
-                    type: result === 0 ? 'lose_turn' : result === -1 ? 'bankrupt' : 'money',
-                    value: result > 0 ? result : 0,
-                    message: result === 0 ? 'Lose a Turn!' : result === -1 ? 'Bankrupt!' : `$${result}`
+                    type: result.type,
+                    value: result.value,
+                    message: result.type === 'lose_turn' ? 'Lose a Turn!' : 
+                            result.type === 'bankrupt' ? 'Bankrupt!' : `$${result.value}`
                 });
                 spinBtn.disabled = false;
             }, 2000);
@@ -398,21 +410,44 @@ class WheelOfFortuneGame {
     handleSpinResult(result) {
         const wheelResult = document.getElementById('wheelResult');
         if (wheelResult) {
+            // Clear previous classes
+            wheelResult.className = 'wheel-result';
             wheelResult.textContent = result.message;
+            
+            // Add appropriate class for visual effect
+            if (result.type === 'bankrupt') {
+                wheelResult.classList.add('bankrupt');
+                wheelResult.textContent = '💸 BANKRUPT! 💸';
+            } else if (result.type === 'lose_turn') {
+                wheelResult.classList.add('lose-turn');
+                wheelResult.textContent = '⏭️ LOSE A TURN! ⏭️';
+            } else if (result.type === 'money') {
+                wheelResult.classList.add('money');
+                wheelResult.textContent = `💰 $${result.value} 💰`;
+            }
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                if (wheelResult.classList.contains('bankrupt') || 
+                    wheelResult.classList.contains('lose-turn') || 
+                    wheelResult.classList.contains('money')) {
+                    wheelResult.className = 'wheel-result';
+                }
+            }, 3000);
         }
         
         const currentPlayer = this.getCurrentPlayer();
         
         if (result.type === 'bankrupt') {
             currentPlayer.roundScore = 0;
-            this.updateGameMessage(`${currentPlayer.name} went bankrupt! Turn passes to next player.`);
-            this.nextPlayer();
+            this.updateGameMessage(`💸 ${currentPlayer.name} went BANKRUPT! All round earnings lost. Turn passes to next player.`);
+            setTimeout(() => this.nextPlayer(), 2500); // Give time to see the result
         } else if (result.type === 'lose_turn') {
-            this.updateGameMessage(`${currentPlayer.name} lost their turn!`);
-            this.nextPlayer();
+            this.updateGameMessage(`⏭️ ${currentPlayer.name} lost their turn! No money lost, but turn passes to next player.`);
+            setTimeout(() => this.nextPlayer(), 2500); // Give time to see the result
         } else {
             this.gameState.wheelValue = result.value;
-            this.updateGameMessage(`${currentPlayer.name} spun $${result.value}! Guess a consonant.`);
+            this.updateGameMessage(`💰 ${currentPlayer.name} spun $${result.value}! Guess a consonant to earn money.`);
             
             // Enable guess input for human players
             if (currentPlayer.type === 'human') {
