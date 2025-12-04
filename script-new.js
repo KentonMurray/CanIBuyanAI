@@ -385,13 +385,9 @@ class WheelOfFortuneGame {
         // Calculate angle for this section (24 sections = 15 degrees each)
         const degreesPerSection = 360 / this.wheelSections.length; // 15 degrees
         
-        // The wheel starts with section 0 at the top (pointer position)
-        // We want to rotate so the target section ends up at the pointer
-        // Section angles: 0=0°, 1=15°, 2=30°, etc. (clockwise)
+        // Simple approach: Section 0 is at the top, sections go clockwise
+        // To get target section to the top (pointer), rotate counter-clockwise
         const sectionAngle = targetSection * degreesPerSection;
-        
-        // To get the target section to the pointer (top), we need to rotate
-        // the wheel counter-clockwise by the section's angle
         const targetAngle = -sectionAngle;
         
         // Add multiple full rotations for dramatic effect (4-6 full spins)

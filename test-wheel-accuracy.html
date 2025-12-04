@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel Accuracy Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .wheel-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px;
+        }
+        .wheel-image {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ffd700;
+            z-index: 10;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        .section-info {
+            margin: 20px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wheel Accuracy Test</h1>
+    <p>This page tests if the wheel visual actually matches the spin results.</p>
+    
+    <div class="wheel-container">
+        <img src="images/wheel.png" alt="Wheel of Fortune" class="wheel-image" id="wheelImage">
+        <div class="wheel-pointer"></div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="testSpecificValue(500)">Test $500</button>
+        <button onclick="testSpecificValue(0)">Test LOSE TURN</button>
+        <button onclick="testSpecificValue(-1)">Test BANKRUPT</button>
+        <button onclick="testSpecificValue(900)">Test $900</button>
+        <button onclick="testRandomSpin()">Random Spin</button>
+        <button onclick="resetWheel()">Reset Wheel</button>
+    </div>
+    
+    <div class="result" id="result">
+        Click a button to test the wheel accuracy.
+    </div>
+    
+    <div class="section-info">
+        <h3>Wheel Sections (24 total, 15° each):</h3>
+        <div id="sectionList"></div>
+    </div>
+
+    <script>
+        // Wheel configuration (matching the game)
+        const wheelSections = [0, -1, 500, 550, 600, 650, 700, 750, 800, 850, 900, -1, 
+                              500, 550, 600, 650, 700, 750, 800, 850, 900, 500, 550, 600];
+        let currentWheelRotation = 0;
+        
+        // Display section information
+        function displaySections() {
+            const sectionList = document.getElementById('sectionList');
+            let html = '';
+            wheelSections.forEach((value, index) => {
+                const angle = index * 15; // 15 degrees per section
+                const displayValue = value === 0 ? 'LOSE TURN' : value === -1 ? 'BANKRUPT' : `$${value}`;
+                html += `Section ${index + 1}: ${displayValue} (${angle}°)<br>`;
+            });
+            sectionList.innerHTML = html;
+        }
+        
+        // Calculate rotation for specific value
+        function calculateWheelRotation(targetValue) {
+            const matchingSections = [];
+            wheelSections.forEach((value, index) => {
+                if (value === targetValue) {
+                    matchingSections.push(index);
+                }
+            });
+            
+            if (matchingSections.length === 0) {
+                console.error('Target value not found:', targetValue);
+                return { finalRotation: 0, targetSection: 0, sectionAngle: 0, matchingSections: [] };
+            }
+            
+            // Pick first matching section for testing
+            const targetSection = matchingSections[0];
+            const degreesPerSection = 360 / wheelSections.length; // 15 degrees
+            const sectionAngle = targetSection * degreesPerSection;
+            
+            // To get target section to pointer (top), rotate counter-clockwise
+            const targetAngle = -sectionAngle;
+            
+            // Add 4 full rotations for effect
+            const finalRotation = (4 * 360) + targetAngle;
+            
+            return { finalRotation, targetSection, sectionAngle, matchingSections };
+        }
+        
+        function testSpecificValue(value) {
+            const wheelImg = document.getElementById('wheelImage');
+            const result = document.getElementById('result');
+            
+            const calc = calculateWheelRotation(value);
+            const displayValue = value === 0 ? 'LOSE TURN' : value === -1 ? 'BANKRUPT' : `$${value}`;
+            
+            result.innerHTML = `
+                <strong>Testing: ${displayValue}</strong><br>
+                Target Section: ${calc.targetSection + 1} (${calc.sectionAngle}°)<br>
+                Available Sections: ${calc.matchingSections.map(s => s + 1).join(', ')}<br>
+                Final Rotation: ${calc.finalRotation}°<br>
+                <em>Watch the wheel - it should stop with ${displayValue} at the pointer!</em>
+            `;
+            
+            wheelImg.style.transform = `rotate(${currentWheelRotation + calc.finalRotation}deg)`;
+            currentWheelRotation += calc.finalRotation;
+        }
+        
+        function testRandomSpin() {
+            const randomValue = wheelSections[Math.floor(Math.random() * wheelSections.length)];
+            testSpecificValue(randomValue);
+        }
+        
+        function resetWheel() {
+            const wheelImg = document.getElementById('wheelImage');
+            wheelImg.style.transition = 'none';
+            wheelImg.style.transform = 'rotate(0deg)';
+            currentWheelRotation = 0;
+            
+            setTimeout(() => {
+                wheelImg.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            }, 100);
+            
+            document.getElementById('result').innerHTML = 'Wheel reset to starting position.';
+        }
+        
+        // Initialize
+        displaySections();
+    </script>
+</body>
+</html>
