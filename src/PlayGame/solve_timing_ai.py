@@ -64,7 +64,7 @@ class SolveTimingAI:
         
         # Step 1: Decide if we should solve now
         should_solve, solve_reasoning, solve_analysis = should_solve_now(
-            showing, winnings, player_index, category, previous_guesses
+            showing, winnings, player_index, category, previous_guesses, turn
         )
         
         # Adjust solve decision based on AI personality

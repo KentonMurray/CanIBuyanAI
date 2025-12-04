@@ -437,26 +437,31 @@ def play_random_game(type_of_players):
       guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
     elif type_of_player == "oxford":
       guess, dollar = computer_turn_oxford(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "trigram":
-      guess, dollar = computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn)
+    # Main AI types
     elif type_of_player == "smart":
-      guess, dollar = computer_turn_smart(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "conservative":
-      guess, dollar = computer_turn_smart_conservative(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "aggressive":
-      guess, dollar = computer_turn_smart_aggressive(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "optimized":
       guess, dollar = computer_turn_optimized(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "opt_aggressive":
-      guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "opt_conservative":
+    elif type_of_player == "conservative":
       guess, dollar = computer_turn_optimized_conservative(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "aggressive":
+      guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
+    
+    # Advanced solve timing variants (integrated into main three)
     elif type_of_player == "solve_timing":
       guess, dollar = computer_turn_solve_timing_balanced(showing, winnings, previous_guesses, turn, puzzle, game_type)
     elif type_of_player == "solve_conservative":
       guess, dollar = computer_turn_solve_timing_conservative(showing, winnings, previous_guesses, turn, puzzle, game_type)
     elif type_of_player == "solve_aggressive":
       guess, dollar = computer_turn_solve_timing_aggressive(showing, winnings, previous_guesses, turn, puzzle, game_type)
+    
+    # Legacy support for old player types
+    elif type_of_player in ["trigram", "basic", "computer"]:
+      guess, dollar = computer_turn(showing, winnings, previous_guesses, turn)
+    elif type_of_player in ["optimized", "opt_balanced"]:
+      guess, dollar = computer_turn_optimized(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "opt_aggressive":
+      guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "opt_conservative":
+      guess, dollar = computer_turn_optimized_conservative(showing, winnings, previous_guesses, turn)
     else:
       # Default case for unrecognized player types - use basic computer turn
       print(f"Warning: Unknown player type '{type_of_player}', using default computer turn")
@@ -535,14 +540,33 @@ def play_random_game(type_of_players):
       print("The clue is:", clue)
       print_board(showing)
 
+def show_player_types():
+    """Display available player types and their descriptions."""
+    print("\n=== Available Player Types ===")
+    print("Main AI Types:")
+    print("  smart          - Advanced AI with strategic analysis (balanced)")
+    print("  conservative   - Conservative AI with risk-averse play")
+    print("  aggressive     - Aggressive AI with high risk-taking")
+    print("\nAdvanced Solve Timing AI:")
+    print("  solve_timing   - AI that strategically times solve attempts (balanced)")
+    print("  solve_conservative - Solve timing AI with conservative solving")
+    print("  solve_aggressive - Solve timing AI with aggressive solving")
+    print("\nSpecial Types:")
+    print("  human          - Human player")
+    print("\nLegacy Types (still supported):")
+    print("  computer, basic, trigram, optimized, opt_aggressive, opt_conservative")
+    print("\nExample usage:")
+    print("  python play_random_puzzle.py smart conservative aggressive")
+    print("  python play_random_puzzle.py solve_timing smart conservative")
+    print("  python play_random_puzzle.py aggressive solve_aggressive smart\n")
+
 if __name__ == '__main__':
   type_of_players = sys.argv[1:]
   print(type_of_players)
   if len(type_of_players) != 3:
-    print("There should be 3 players ... creating a default game with solve timing AI players")
-    print("Available player types: human, morse, oxford, trigram, smart, conservative, aggressive,")
-    print("                       solve_timing, solve_conservative, solve_aggressive")
-    type_of_players = ["human", "solve_timing", "solve_conservative"] # Updated default with solve timing AI
+    print("There should be 3 players ... creating a default game with modern AI players")
+    show_player_types()
+    type_of_players = ["smart", "conservative", "aggressive"] # Main three AI types
     time.sleep(3)
   #type_of_players = ["morse", "morse", "oxford"] # TODO: Set with command line
 

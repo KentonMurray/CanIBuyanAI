@@ -361,7 +361,8 @@ def should_solve_now(
     scores: List[int], 
     player_index: int,
     category: str = None,
-    previous_guesses: List[str] = None
+    previous_guesses: List[str] = None,
+    turn_number: int = 0
 ) -> Tuple[bool, str, Dict[str, float]]:
     """
     Main decision function: should the AI solve the puzzle now?
@@ -372,6 +373,7 @@ def should_solve_now(
         player_index: Index of current player
         category: Puzzle category
         previous_guesses: Letters already guessed
+        turn_number: Current turn number (for early round difficulty adjustment)
     
     Returns:
         Tuple of (should_solve, reasoning, analysis_data)
@@ -415,17 +417,33 @@ def should_solve_now(
     elif entropy > 3.0:  # High entropy - still very uncertain
         solve_threshold += 0.1
     
+    # Adjust based on turn number (early rounds are harder to solve)
+    if turn_number <= 6:  # First 2 rounds (3 players * 2 turns each)
+        # Early game - much harder to solve, increase threshold significantly
+        early_round_penalty = 0.2 + (0.05 * (6 - turn_number))  # 0.2-0.5 penalty
+        solve_threshold += early_round_penalty
+    elif turn_number <= 12:  # Rounds 3-4
+        # Mid-early game - still harder to solve
+        solve_threshold += 0.1
+    # Late game (turn_number > 12) - no penalty, normal solving
+    
     # Make decision
     should_solve = solve_prob >= solve_threshold
     
     # Generate reasoning
+    early_round_note = ""
+    if turn_number <= 6:
+        early_round_note = f" (Early round {turn_number//3 + 1} - higher threshold)"
+    elif turn_number <= 12:
+        early_round_note = f" (Mid-game round {turn_number//3 + 1} - moderate threshold)"
+    
     if should_solve:
         reasoning = (f"SOLVE: {solve_prob:.1%} solve probability exceeds threshold "
-                    f"({solve_threshold:.1%}). Entropy: {entropy:.2f}, "
+                    f"({solve_threshold:.1%}){early_round_note}. Entropy: {entropy:.2f}, "
                     f"Expected spin value: ${spin_expected_value:.0f}")
     else:
         reasoning = (f"CONTINUE: {solve_prob:.1%} solve probability below threshold "
-                    f"({solve_threshold:.1%}). Expected spin value: ${spin_expected_value:.0f}")
+                    f"({solve_threshold:.1%}){early_round_note}. Expected spin value: ${spin_expected_value:.0f}")
     
     # Analysis data for debugging/tuning
     analysis_data = {
