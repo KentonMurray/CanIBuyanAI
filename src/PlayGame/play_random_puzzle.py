@@ -9,6 +9,7 @@ from solve_timing_ai import (
     computer_turn_solve_timing_aggressive, 
     computer_turn_solve_timing_balanced
 )
+from solve_advisor import SolveAdvisor
 
 def computer_turn(showing, winnings, previous_guesses, turn):
   # Guess in the order of the alphabet
@@ -268,19 +269,29 @@ def get_random_puzzle():
         return(puzzle, clue, date, game_type)
       number = number + 1
 
-def human_turn(showing, winnings, previous_guesses, turn, puzzle):
+def human_turn(showing, winnings, previous_guesses, turn, puzzle, clue="PHRASE"):
+
+  # Initialize solve advisor for getting advice
+  advisor = SolveAdvisor()
 
   # Make sure human chooses a valid action
   deciding = False
   while not deciding:
-    decision = input("1: Spin, 2: Buy Vowel, 3: Solve ....  ")
+    decision = input("1: Spin, 2: Buy Vowel, 3: Solve, 4: Get Solve Advice ....  ")
     if decision == "1" or decision == "2" or decision == "3":
       deciding = True
       if decision == "2" and winnings[(turn % 3)] < 250: # Minimum cost of a vowel
         print("Sorry .... you don't have enough money. Select 1 or 3")
         deciding = False
+    elif decision == "4":
+      # Get solve advice without committing
+      test_guess = input("Enter your potential solution to analyze: ").upper()
+      results = advisor.analyze(showing, test_guess, clue, previous_guesses)
+      advisor.print_analysis(results)
+      print("\nNow make your decision...")
+      # Don't set deciding=True, let them choose again after seeing advice
     else:
-      print("Please choose 1, 2, or 3")
+      print("Please choose 1, 2, 3, or 4")
 
   # Player decisions
   if decision == "3":
@@ -411,7 +422,7 @@ def play_random_game(type_of_players):
     print("This player is:", type_of_player)
 
     if type_of_player == "human":
-      guess, dollar = human_turn(showing, winnings, previous_guesses, turn, puzzle)
+      guess, dollar = human_turn(showing, winnings, previous_guesses, turn, puzzle, clue)
     elif type_of_player == "morse":
       guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
     elif type_of_player == "oxford":
