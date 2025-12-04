@@ -22,6 +22,17 @@ class WheelOfFortuneGame {
         };
         this.backendUrl = window.location.origin.replace(':12000', ':8083'); // Backend on port 8083
         
+        // Initialize the new puzzle manager
+        this.puzzleManager = new PuzzleManager();
+        
+        // Log puzzle statistics
+        console.log(`Puzzle System Loaded:`);
+        console.log(`- Total puzzles: ${this.puzzleManager.getTotalPuzzleCount()}`);
+        console.log(`- Categories: ${this.puzzleManager.getCategories().join(', ')}`);
+        this.puzzleManager.getCategories().forEach(category => {
+            console.log(`  - ${category}: ${this.puzzleManager.getCategoryPuzzleCount(category)} puzzles`);
+        });
+        
         this.init();
     }
 
@@ -222,52 +233,28 @@ class WheelOfFortuneGame {
         }
     }
 
-    async initializeGame() {
-        try {
-            // Load a random puzzle from backend
-            const response = await fetch(`${this.backendUrl}/api/puzzles/random`);
-            if (!response.ok) {
-                throw new Error('Failed to load puzzle from backend');
+    initializeGame() {
+        // Load a random puzzle using the new puzzle manager
+        this.gameState.puzzle = this.puzzleManager.getRandomPuzzle();
+        this.gameState.revealedLetters = this.gameState.puzzle.phrase.split('').map(char => 
+            char === ' ' ? ' ' : '_'
+        );
+        this.gameState.usedLetters = [];
+        
+        this.renderPuzzle();
+        this.renderPlayers();
+        this.updateRoundDisplay();
+        this.updateGameMessage(`Game started! Category: ${this.gameState.puzzle.category}. Auto-spinning wheel...`);
+        
+        // Auto-spin for all players at game start
+        const currentPlayer = this.getCurrentPlayer();
+        setTimeout(() => {
+            if (currentPlayer.type === 'ai') {
+                this.makeAIMove();
+            } else {
+                this.spinWheel();
             }
-            
-            this.gameState.puzzle = await response.json();
-            this.gameState.revealedLetters = this.gameState.puzzle.phrase.split('').map(char => 
-                char === ' ' ? ' ' : '_'
-            );
-            this.gameState.usedLetters = [];
-            
-            this.renderPuzzle();
-            this.renderPlayers();
-            this.updateRoundDisplay();
-            this.updateGameMessage('Game started! Auto-spinning wheel...');
-            
-            // Auto-spin for all players at game start
-            const currentPlayer = this.getCurrentPlayer();
-            setTimeout(() => {
-                if (currentPlayer.type === 'ai') {
-                    this.makeAIMove();
-                } else {
-                    this.spinWheel();
-                }
-            }, 1000);
-            
-        } catch (error) {
-            console.error('Error initializing game:', error);
-            // Fallback to local puzzle
-            this.gameState.puzzle = {
-                phrase: "WHEEL OF FORTUNE",
-                category: "TV SHOW"
-            };
-            this.gameState.revealedLetters = this.gameState.puzzle.phrase.split('').map(char => 
-                char === ' ' ? ' ' : '_'
-            );
-            this.gameState.usedLetters = [];
-            
-            this.renderPuzzle();
-            this.renderPlayers();
-            this.updateRoundDisplay();
-            this.updateGameMessage('Game started! (Using fallback puzzle)');
-        }
+        }, 1000);
     }
 
     renderPuzzle() {
