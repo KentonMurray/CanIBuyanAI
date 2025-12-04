@@ -22,21 +22,21 @@ def create_wheel():
     ax.set_aspect('equal')
     ax.axis('off')
     
-    # Colors for different value types
+    # Colors using the new palette: #E3D8F1, #FF715B, #D0D38F, #006E90, #3C1518
     colors = []
     for value in wheel_values:
         if value == -1:  # BANKRUPT
-            colors.append('#FF0000')  # Red
+            colors.append('#3C1518')  # Dark maroon
         elif value == 0:  # LOSE TURN
-            colors.append('#FFA500')  # Orange
+            colors.append('#FF715B')  # Coral
         elif value >= 800:  # High values
-            colors.append('#4169E1')  # Royal Blue
+            colors.append('#006E90')  # Dark teal
         elif value >= 700:  # Medium-high values
-            colors.append('#1E90FF')  # Dodger Blue
+            colors.append('#E3D8F1')  # Light purple
         elif value >= 600:  # Medium values
-            colors.append('#00BFFF')  # Deep Sky Blue
-        else:  # Lower values
-            colors.append('#87CEEB')  # Sky Blue
+            colors.append('#D0D38F')  # Light yellow-green
+        else:  # Lower values (500-550)
+            colors.append('#FF715B')  # Coral
     
     # Calculate angles for each section
     n_sections = len(wheel_values)
@@ -59,22 +59,30 @@ def create_wheel():
         text_x = text_radius * math.cos(mid_angle)
         text_y = text_radius * math.sin(mid_angle)
         
-        # Format text
+        # Format text with appropriate contrast colors
         if value == -1:
             text = "BANKRUPT"
             fontsize = 8
             fontweight = 'bold'
-            color_text = 'white'
+            color_text = 'white'  # White on dark maroon
         elif value == 0:
             text = "LOSE\nTURN"
             fontsize = 8
             fontweight = 'bold'
-            color_text = 'black'
+            color_text = 'white'  # White on coral
         else:
             text = f"${value}"
             fontsize = 10
             fontweight = 'bold'
-            color_text = 'white' if value >= 700 else 'black'
+            # Choose text color based on background for good contrast
+            if value >= 800:  # Dark teal background
+                color_text = 'white'
+            elif value >= 700:  # Light purple background
+                color_text = 'black'
+            elif value >= 600:  # Light yellow-green background
+                color_text = 'black'
+            else:  # Coral background
+                color_text = 'white'
         
         # Add text
         ax.text(text_x, text_y, text, ha='center', va='center', 

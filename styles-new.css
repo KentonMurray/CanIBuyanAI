@@ -7,8 +7,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: url('images/background.jpg') center center fixed;
-    background-size: cover;
+    background: linear-gradient(135deg, #3C1518 0%, #006E90 50%, #E3D8F1 100%);
     min-height: 100vh;
     color: #fff;
     overflow-x: hidden;
@@ -22,7 +21,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(60, 21, 24, 0.1) 0%, rgba(0, 110, 144, 0.1) 50%, rgba(227, 216, 241, 0.1) 100%);
     z-index: -1;
     pointer-events: none;
 }
@@ -41,8 +40,8 @@ body::before {
 header {
     text-align: center;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    border-bottom: 3px solid #ffd700;
+    background: rgba(60, 21, 24, 0.9);
+    border-bottom: 3px solid #D0D38F;
 }
 
 header h1 {
@@ -66,15 +65,15 @@ header h1 {
     max-width: 800px;
     margin: 50px auto;
     padding: 40px;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 110, 144, 0.2);
     border-radius: 15px;
-    border: 3px solid #ffd700;
+    border: 3px solid #E3D8F1;
     text-align: center;
 }
 
 .setup-container h2 {
     font-size: 2.5rem;
-    color: #ffd700;
+    color: #D0D38F;
     margin-bottom: 30px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
@@ -95,9 +94,9 @@ header h1 {
 }
 
 .round-btn {
-    background: linear-gradient(145deg, #2c3e50, #34495e);
-    color: #ecf0f1;
-    border: 2px solid #3498db;
+    background: linear-gradient(145deg, #006E90, #3C1518);
+    color: #ffffff;
+    border: 2px solid #E3D8F1;
     padding: 12px 24px;
     border-radius: 8px;
     font-size: 16px;
@@ -108,16 +107,17 @@ header h1 {
 }
 
 .round-btn:hover {
-    background: linear-gradient(145deg, #34495e, #2c3e50);
-    border-color: #5dade2;
+    background: linear-gradient(145deg, #3C1518, #006E90);
+    border-color: #D0D38F;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 8px rgba(227, 216, 241, 0.3);
 }
 
 .round-btn.active {
-    background: linear-gradient(145deg, #3498db, #2980b9);
-    border-color: #ecf0f1;
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.5);
+    background: linear-gradient(145deg, #E3D8F1, #D0D38F);
+    color: #3C1518;
+    border-color: #006E90;
+    box-shadow: 0 4px 12px rgba(208, 211, 143, 0.5);
 }
 
 .player-selection {
@@ -150,8 +150,8 @@ header h1 {
 }
 
 .counter-btn {
-    background: #ffd700;
-    color: #000;
+    background: #D0D38F;
+    color: #3C1518;
     border: none;
     width: 40px;
     height: 40px;
@@ -163,7 +163,7 @@ header h1 {
 }
 
 .counter-btn:hover {
-    background: #ffed4e;
+    background: #E3D8F1;
     transform: scale(1.1);
 }
 
@@ -209,8 +209,8 @@ header h1 {
 }
 
 .continue-btn, .start-btn {
-    background: linear-gradient(45deg, #ffd700, #ffed4e);
-    color: #000;
+    background: linear-gradient(45deg, #D0D38F, #E3D8F1);
+    color: #3C1518;
     border: none;
     padding: 15px 40px;
     font-size: 1.5rem;
@@ -223,7 +223,7 @@ header h1 {
 
 .continue-btn:hover, .start-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 5px 15px rgba(208, 211, 143, 0.4);
 }
 
 /* Naming Screen Styles */
@@ -357,7 +357,7 @@ header h1 {
 }
 
 .spin-button {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    background: linear-gradient(45deg, #FF715B, #006E90);
     color: white;
     border: none;
     padding: 15px 40px;
@@ -372,7 +372,7 @@ header h1 {
 
 .spin-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 5px 15px rgba(255, 113, 91, 0.4);
 }
 
 .spin-button:disabled {
@@ -641,7 +641,7 @@ header h1 {
 }
 
 .guess-container button, .phrase-container button {
-    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    background: linear-gradient(45deg, #006E90, #E3D8F1);
     color: white;
     border: none;
     padding: 12px 25px;
@@ -655,7 +655,7 @@ header h1 {
 
 .guess-container button:hover, .phrase-container button:hover {
     transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 5px 15px rgba(0, 110, 144, 0.4);
 }
 
 .guess-container button:disabled, .phrase-container button:disabled {
@@ -673,8 +673,8 @@ header h1 {
 }
 
 .action-buttons button {
-    background: linear-gradient(45deg, #2196F3, #42A5F5);
-    color: white;
+    background: linear-gradient(45deg, #D0D38F, #FF715B);
+    color: #3C1518;
     border: none;
     padding: 12px 25px;
     font-size: 1.1rem;
@@ -686,7 +686,7 @@ header h1 {
 
 .action-buttons button:hover {
     transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+    box-shadow: 0 5px 15px rgba(208, 211, 143, 0.4);
 }
 
 .action-buttons button:disabled {
