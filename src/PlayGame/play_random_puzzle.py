@@ -303,6 +303,7 @@ def human_turn(showing, winnings, previous_guesses, turn, puzzle):
     solve = input("Your guess to solve: ...... ").upper() # TODO: clean
     if solve == puzzle:
       print("YOU WIN!")
+      winnings[turn % 3] += 1000  # Add $1000 bonus for solving
       print("Player", turn % 3, "won!")
       print("Winnings:", winnings)
       is_solved = True
@@ -492,6 +493,7 @@ def play_random_game(type_of_players):
       solve = showing
   
     if solve == puzzle:
+      winnings[turn % 3] += 1000  # Add $1000 bonus for solving
       print("Player", turn % 3, "won!")
       print("Winnings:", winnings)
       is_solved = True
