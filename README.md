@@ -134,3 +134,5 @@ The modular design allows researchers to:
 - Compare different risk tolerance profiles
 - Study entropy-based decision making
 
+# Wheel of Fortune — Bonus Round 
+
