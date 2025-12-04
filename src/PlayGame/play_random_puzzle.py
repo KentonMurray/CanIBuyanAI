@@ -5,6 +5,11 @@ import time
 import ascii_wheel
 from smart_player import computer_turn_smart, computer_turn_smart_conservative, computer_turn_smart_aggressive
 from optimized_player import computer_turn_optimized, computer_turn_optimized_aggressive, computer_turn_optimized_conservative, get_human_suggestion
+from solve_timing_ai import (
+    computer_turn_solve_timing_conservative, 
+    computer_turn_solve_timing_aggressive, 
+    computer_turn_solve_timing_balanced
+)
 
 def computer_turn(showing, winnings, previous_guesses, turn):
   # Guess in the order of the alphabet
@@ -440,12 +445,12 @@ def play_random_game(type_of_players):
       guess, dollar = computer_turn_smart_conservative(showing, winnings, previous_guesses, turn)
     elif type_of_player == "aggressive":
       guess, dollar = computer_turn_smart_aggressive(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "optimized":
-      guess, dollar = computer_turn_optimized(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "opt_aggressive":
-      guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
-    elif type_of_player == "opt_conservative":
-      guess, dollar = computer_turn_optimized_conservative(showing, winnings, previous_guesses, turn)
+    elif type_of_player == "solve_timing":
+      guess, dollar = computer_turn_solve_timing_balanced(showing, winnings, previous_guesses, turn, puzzle, game_type)
+    elif type_of_player == "solve_conservative":
+      guess, dollar = computer_turn_solve_timing_conservative(showing, winnings, previous_guesses, turn, puzzle, game_type)
+    elif type_of_player == "solve_aggressive":
+      guess, dollar = computer_turn_solve_timing_aggressive(showing, winnings, previous_guesses, turn, puzzle, game_type)
 
     ## Human playing
     #if turn % 3 == 0:
@@ -458,8 +463,19 @@ def play_random_game(type_of_players):
     #  guess, dollar = computer_turn_morse(showing, winnings, previous_guesses, turn)
 
 
+    # Check if this is a solve attempt
+    if guess.startswith('SOLVE:'):
+      solve_guess = guess[6:]  # Remove 'SOLVE:' prefix
+      print(f"Player {turn % 3} attempts to solve: '{solve_guess}'")
+      if solve_guess == puzzle:
+        print(f"CORRECT! Player {turn % 3} solved the puzzle!")
+        print("Final winnings:", winnings)
+        return turn % 3  # Return winner
+      else:
+        print("Wrong solution ... next player")
+        turn = turn + 1
     # Double check that guess has not already been said (I've seen it on TV before)
-    if guess in previous_guesses and guess != "_":
+    elif guess in previous_guesses and guess != "_":
       print("Sorry, that's already been guessed .... next player")
       turn = turn + 1
     else:
@@ -475,13 +491,18 @@ def play_random_game(type_of_players):
       elif len(correct_places) < 1:
         print("Sorry, not in the puzzle ... next player")
         turn = turn + 1
-    winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
-    for correct_letter in correct_places:
-      showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
-    print("Winnings:", winnings)
-    print("Previous guesses:", previous_guesses)
-    print("The clue is:", clue)
-    print_board(showing)
+      else:
+        # Add winnings for correct letter guesses
+        winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
+        for correct_letter in correct_places:
+          showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
+    
+    # Only print status if we're not solving
+    if not guess.startswith('SOLVE:'):
+      print("Winnings:", winnings)
+      print("Previous guesses:", previous_guesses)
+      print("The clue is:", clue)
+      print_board(showing)
 
   while not is_solved:
     print("Player", turn % 3, "has a chance to solve")
@@ -507,12 +528,10 @@ if __name__ == '__main__':
   type_of_players = sys.argv[1:]
   print(type_of_players)
   if len(type_of_players) != 3:
-    print("There should be 3 players ... creating a default game with optimized AI players")
-    print("Available player types:")
-    print("  Basic: human, morse, oxford, trigram")
-    print("  Smart: smart, conservative, aggressive")
-    print("  Optimized: optimized, opt_conservative, opt_aggressive")
-    type_of_players = ["human", "optimized", "opt_conservative"] # Updated default with optimized players
+    print("There should be 3 players ... creating a default game with solve timing AI players")
+    print("Available player types: human, morse, oxford, trigram, smart, conservative, aggressive,")
+    print("                       solve_timing, solve_conservative, solve_aggressive")
+    type_of_players = ["human", "solve_timing", "solve_conservative"] # Updated default with solve timing AI
     time.sleep(3)
   #type_of_players = ["morse", "morse", "oxford"] # TODO: Set with command line
 
