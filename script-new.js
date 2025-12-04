@@ -596,7 +596,8 @@ class WheelOfFortuneGame {
             } else {
                 this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle. Your turn is over.`);
             }
-            this.nextPlayer();
+            // Give time to read the message before moving to next player
+            setTimeout(() => this.nextPlayer(), 2500);
         }
         
         this.renderPuzzle();
