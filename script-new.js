@@ -592,9 +592,9 @@ class WheelOfFortuneGame {
             
         } else {
             if (isVowel) {
-                this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle. (You still paid $250 for the vowel)`);
+                this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle. (You still paid $250 for the vowel) Your turn is over.`);
             } else {
-                this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle.`);
+                this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle. Your turn is over.`);
             }
             this.nextPlayer();
         }
