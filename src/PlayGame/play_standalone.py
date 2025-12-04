@@ -115,28 +115,86 @@ class StandaloneHost:
             self.player_commentary(player_num)
     
     def player_commentary(self, player_num):
-        """Generate player commentary"""
-        player = self.players.get(player_num, {})
-        if not player:
-            return
-            
-        # Simple trait-based commentary
-        trait = random.choice(player['traits'])
+        """Generate player commentary or prompt user"""
         
-        if trait == "Confident":
-            comment = "I've got this! Just need to stay focused!"
-        elif trait == "Nervous":
-            comment = "Oh gosh, I hope I can figure this out..."
-        elif trait == "Cheerful":
-            comment = "This is so much fun! I love this game!"
-        elif trait == "Strategic":
-            comment = "Let me think about the most common letters..."
-        elif trait == "Impulsive":
-            comment = "I'm just going to go with my gut feeling!"
+        # Randomly select who provides commentary: user has higher chance
+        commentators = ['user', 'user', 'player1', 'player2', 'player3']  # User appears twice for higher probability
+        selected = random.choice(commentators)
+        
+        if selected == 'user':
+            self.prompt_user_commentary()
         else:
-            comment = "This puzzle is really challenging!"
+            # Generate AI player commentary
+            player = self.players.get(player_num, {})
+            if not player:
+                return
+                
+            # Simple trait-based commentary
+            trait = random.choice(player['traits'])
+            
+            if trait == "Confident":
+                comment = "I've got this! Just need to stay focused!"
+            elif trait == "Nervous":
+                comment = "Oh gosh, I hope I can figure this out..."
+            elif trait == "Cheerful":
+                comment = "This is so much fun! I love this game!"
+            elif trait == "Strategic":
+                comment = "Let me think about the most common letters..."
+            elif trait == "Impulsive":
+                comment = "I'm just going to go with my gut feeling!"
+            else:
+                comment = "This puzzle is really challenging!"
+            
+            print(f"💬 {player['name']}: {comment}")
+            
+            # Pat responds to player commentary
+            pat_responses = [
+                "Great observation!",
+                "You're absolutely right!",
+                "That's exactly what I was thinking!",
+                "I like your thinking!",
+                "You know this game well!",
+                "That's the spirit!",
+                "Excellent point!"
+            ]
+            pat_response = random.choice(pat_responses)
+            print(f"🎙️ Pat Sajak: {pat_response}")
+    
+    def prompt_user_commentary(self):
+        """Prompt user for commentary"""
+        print(f"\n🎤 Your turn to comment! What do you think about what just happened?")
+        print("Enter your commentary (up to 2 lines, or press Enter to skip):")
         
-        print(f"💬 {player['name']}: {comment}")
+        try:
+            line1 = input("Line 1: ").strip()
+            if line1:
+                line2 = input("Line 2 (optional): ").strip()
+                
+                user_commentary = line1
+                if line2:
+                    user_commentary += f" {line2}"
+                
+                print(f"\n🎤 You: {user_commentary}")
+                
+                # Pat responds to user commentary
+                pat_responses = [
+                    "Great observation!",
+                    "You're absolutely right!",
+                    "That's exactly what I was thinking!",
+                    "Couldn't have said it better myself!",
+                    "You know this game well!",
+                    "That's the spirit!",
+                    "You're really paying attention!",
+                    "Excellent point!",
+                    "I like your thinking!"
+                ]
+                
+                pat_response = random.choice(pat_responses)
+                print(f"🎙️ Pat Sajak: {pat_response}")
+            else:
+                print("🎤 You chose to stay quiet this time!")
+        except (EOFError, KeyboardInterrupt):
+            print("🎤 You chose to stay quiet this time!")
 
 # Initialize the host
 host = StandaloneHost()

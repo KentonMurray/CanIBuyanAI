@@ -251,12 +251,14 @@ class InteractiveHost:
     def _handle_third_action_commentary(self, action: Dict):
         """Handle commentary for every third game action"""
         
-        # Randomly select who provides commentary
-        commentators = ['user', 'player1', 'player2']
+        # Randomly select who provides commentary (user has higher chance)
+        commentators = ['user', 'user', 'player0', 'player1', 'player2']  # User appears twice for higher probability
         selected = random.choice(commentators)
         
         if selected == 'user':
             self._prompt_user_commentary(action)
+        elif selected == 'player0' and 0 in self.player_personalities:
+            self._generate_player_commentary(0, action)
         elif selected == 'player1' and 1 in self.player_personalities:
             self._generate_player_commentary(1, action)
         elif selected == 'player2' and 2 in self.player_personalities:
@@ -269,35 +271,40 @@ class InteractiveHost:
         """Prompt user for commentary"""
         print(f"\n🎤 Your turn to comment! What do you think about what just happened?")
         print(f"(Action: {action['details']})")
-        print("Enter your commentary (up to 2 lines):")
+        print("Enter your commentary (up to 2 lines, or press Enter to skip):")
         
-        line1 = input("Line 1: ").strip()
-        line2 = input("Line 2 (optional): ").strip()
-        
-        user_commentary = line1
-        if line2:
-            user_commentary += f" {line2}"
-        
-        if user_commentary:
-            print(f"\n🎤 You: {user_commentary}")
-            
-            # Pat responds to user commentary
-            pat_responses = [
-                "Great observation!",
-                "You're absolutely right!",
-                "That's exactly what I was thinking!",
-                "Couldn't have said it better myself!",
-                "You know this game well!",
-                "That's the spirit!",
-                "You're really paying attention!",
-                "Excellent point!",
-                "I like your thinking!",
-                "You've got a good eye for the game!"
-            ]
-            
-            pat_response = random.choice(pat_responses)
-            print(f"🎙️ Pat Sajak: {pat_response}")
-            time.sleep(1)
+        try:
+            line1 = input("Line 1: ").strip()
+            if line1:
+                line2 = input("Line 2 (optional): ").strip()
+                
+                user_commentary = line1
+                if line2:
+                    user_commentary += f" {line2}"
+                
+                print(f"\n🎤 You: {user_commentary}")
+                
+                # Pat responds to user commentary
+                pat_responses = [
+                    "Great observation!",
+                    "You're absolutely right!",
+                    "That's exactly what I was thinking!",
+                    "Couldn't have said it better myself!",
+                    "You know this game well!",
+                    "That's the spirit!",
+                    "You're really paying attention!",
+                    "Excellent point!",
+                    "I like your thinking!",
+                    "You've got a good eye for the game!"
+                ]
+                
+                pat_response = random.choice(pat_responses)
+                print(f"🎙️ Pat Sajak: {pat_response}")
+                time.sleep(1)
+            else:
+                print("🎤 You chose to stay quiet this time!")
+        except (EOFError, KeyboardInterrupt):
+            print("🎤 You chose to stay quiet this time!")
     
     def _generate_player_commentary(self, player_num: int, action: Dict):
         """Generate commentary from a specific player using ChatGPT or templates"""
