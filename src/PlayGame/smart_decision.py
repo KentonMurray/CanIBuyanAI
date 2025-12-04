@@ -101,11 +101,11 @@ def analyze_spin_risk() -> Dict:
     total_segments = len(wheel_values)
     
     return {
-        'expected_value': sum(positive_values) / total_segments,
+        'expected_value': sum(positive_values) / total_segments,  # Expected gain per spin
         'lose_turn_probability': lose_turn_count / total_segments,
         'bankrupt_probability': bankrupt_count / total_segments,
         'success_probability': len(positive_values) / total_segments,
-        'average_positive_value': sum(positive_values) / len(positive_values)
+        'average_positive_value': sum(positive_values) / len(positive_values) if positive_values else 0
     }
 
 
@@ -153,12 +153,17 @@ def calculate_decision_score(
     
     # Factor 1: Expected value
     # Spinning: expected wheel value * probability of success * estimated consonants
+    # Account for bankruptcy risk by reducing expected value
     spin_expected = (spin_analysis['average_positive_value'] * 
                     spin_analysis['success_probability'] * 
                     min(3, game_state['estimated_remaining_consonants']))
     
+    # Subtract expected loss from bankruptcy (current winnings * bankruptcy probability)
+    bankruptcy_risk = winnings * spin_analysis['bankrupt_probability']
+    spin_expected = max(0, spin_expected - bankruptcy_risk)
+    
     # Buying vowel: fixed cost but guaranteed if vowels exist
-    vowel_expected = vowel_analysis['expected_letters'] * 100  # Arbitrary value per letter
+    vowel_expected = vowel_analysis['expected_letters'] * 150  # Higher value per vowel
     
     spin_score += spin_expected * 0.3
     buy_vowel_score += vowel_expected * 0.3

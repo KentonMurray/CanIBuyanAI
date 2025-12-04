@@ -445,6 +445,10 @@ def play_random_game(type_of_players):
       guess, dollar = computer_turn_optimized_aggressive(showing, winnings, previous_guesses, turn)
     elif type_of_player == "opt_conservative":
       guess, dollar = computer_turn_optimized_conservative(showing, winnings, previous_guesses, turn)
+    else:
+      # Default case for unrecognized player types - use basic computer turn
+      print(f"Warning: Unknown player type '{type_of_player}', using default computer turn")
+      guess, dollar = computer_turn(showing, winnings, previous_guesses, turn)
 
     ## Human playing
     #if turn % 3 == 0:

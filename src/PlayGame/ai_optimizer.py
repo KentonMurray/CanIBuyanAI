@@ -111,12 +111,17 @@ class WheelOfFortuneOptimizer:
         
         total_segments = len(self.wheel_values)
         
-        expected_value = sum(positive_values) / total_segments
+        # Calculate proper expected value: sum of (value * probability) for all outcomes
+        # For positive values: gain that amount per letter
+        # For lose turn (0): gain nothing, lose turn
+        # For bankrupt (-1): lose all current winnings
+        expected_value = sum(positive_values) / total_segments  # Only positive outcomes contribute to expected gain
+        
         bankruptcy_prob = bankrupt_count / total_segments
         lose_turn_prob = lose_turn_count / total_segments
         success_prob = len(positive_values) / total_segments
         high_value_prob = high_value_count / total_segments
-        avg_positive = sum(positive_values) / len(positive_values)
+        avg_positive = sum(positive_values) / len(positive_values) if positive_values else 0
         
         # Risk score: higher is riskier
         risk_score = (bankruptcy_prob * 2.0) + (lose_turn_prob * 1.0)
@@ -163,25 +168,34 @@ class WheelOfFortuneOptimizer:
     def calculate_spin_expected_value(self, game_state: GameState, wheel_analysis: WheelAnalysis, 
                                     letter_analysis: LetterAnalysis) -> float:
         """Calculate expected value of spinning the wheel."""
-        # Base expected value from wheel
-        base_ev = wheel_analysis.expected_value
+        # Get the best consonant and its estimated frequency in the puzzle
+        best_consonant = letter_analysis.best_consonant
         
-        # Estimate number of letters that will be revealed
-        best_consonant_freq = letter_analysis.consonant_probability.get(
-            letter_analysis.best_consonant, 0.05
-        )
+        # Estimate probability this consonant appears in the puzzle
+        # Use pattern analysis if available, otherwise use general frequency
+        consonant_prob = letter_analysis.consonant_probability.get(best_consonant, 0.05)
         
-        # Estimate letters revealed (conservative estimate)
-        estimated_letters = min(3, letter_analysis.expected_consonant_count * best_consonant_freq * 2)
+        # Estimate number of times this consonant appears (based on puzzle length and frequency)
+        puzzle_length = len(game_state.showing.replace(' ', '').replace('_', ''))
+        total_puzzle_length = len(game_state.showing.replace(' ', ''))
+        estimated_occurrences = max(1, total_puzzle_length * consonant_prob * 0.6)  # Conservative estimate
         
-        # Expected value = wheel value * probability of success * estimated letters
-        spin_ev = base_ev * wheel_analysis.success_probability * estimated_letters
+        # Expected value calculation:
+        # P(success) * average_wheel_value * estimated_letter_count - P(fail) * penalties
+        success_gain = (wheel_analysis.success_probability * 
+                       wheel_analysis.average_positive_value * 
+                       estimated_occurrences)
         
-        # Subtract risk penalties - make more conservative
-        bankruptcy_penalty = game_state.player_winnings * wheel_analysis.bankruptcy_probability * 1.5  # More conservative
-        lose_turn_penalty = 300 * wheel_analysis.lose_turn_probability  # Higher opportunity cost
+        # Risk penalties
+        bankruptcy_penalty = (wheel_analysis.bankruptcy_probability * 
+                            game_state.player_winnings)  # Lose all current winnings
         
-        return spin_ev - bankruptcy_penalty - lose_turn_penalty
+        lose_turn_penalty = (wheel_analysis.lose_turn_probability * 
+                           wheel_analysis.average_positive_value * 0.5)  # Opportunity cost
+        
+        total_expected_value = success_gain - bankruptcy_penalty - lose_turn_penalty
+        
+        return max(0, total_expected_value)  # Don't return negative expected values
     
     def calculate_vowel_expected_value(self, game_state: GameState, letter_analysis: LetterAnalysis) -> float:
         """Calculate expected value of buying a vowel."""
