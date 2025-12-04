@@ -11,6 +11,18 @@ __pycache__/
 venv/
 ENV/
 
+# Logs
+*.log
+backend.log
+frontend.log
+server.log
+
 # OS files
 .DS_Store
 Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup

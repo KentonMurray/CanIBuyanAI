@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Fortune Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: url('images/background.jpg') center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .game-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        .game-link {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .game-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .main-game {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            font-size: 1.3em;
+            padding: 25px 40px;
+        }
+        .features {
+            margin: 40px 0;
+            text-align: left;
+        }
+        .features h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+        }
+        .features li::before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 120px;
+            margin: 10px;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="images/title-logo.png" alt="WHEEL OF FORTUNE" style="max-height: 150px; height: auto; max-width: 90%; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.8)); margin: 20px 0;">
+        <p class="subtitle">Play the classic word puzzle game with 129 puzzles across 3 categories!</p>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">129</div>
+                <div class="stat-label">Total Puzzles</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Fun Factor</div>
+            </div>
+        </div>
+
+        <div class="game-links">
+            <a href="wheel-of-fortune-new.html" class="game-link main-game">
+                🎮 PLAY GAME
+            </a>
+            <a href="test-puzzles.html" class="game-link">
+                🧪 Test Puzzles
+            </a>
+        </div>
+
+        <div class="features">
+            <h3>🌟 Game Features</h3>
+            <ul>
+                <li><strong>129 Puzzles</strong> across College Life, On The Map, and Fictional Character categories</li>
+                <li><strong>Human vs AI Players</strong> with customizable strategies</li>
+                <li><strong>Multiple Rounds</strong> - play 1, 3, 5, or 7 rounds</li>
+                <li><strong>Random Puzzle Selection</strong> - never play the same game twice</li>
+                <li><strong>No Server Required</strong> - runs entirely in your browser</li>
+                <li><strong>Easy to Expand</strong> - add your own puzzles anytime</li>
+            </ul>
+        </div>
+
+        <div class="features">
+            <h3>📚 Puzzle Categories</h3>
+            <ul>
+                <li><strong>College Life (44 puzzles)</strong> - Finals Week, Academic Scholarship, Campus Life</li>
+                <li><strong>On The Map (82 puzzles)</strong> - The Pacific Ocean, Rocky Mountains, World Locations</li>
+                <li><strong>Fictional Character (3 puzzles)</strong> - Classic Characters from Literature & TV</li>
+            </ul>
+        </div>
+
+        <p style="margin-top: 40px; opacity: 0.7; font-size: 0.9em;">
+            🔗 <strong>GitHub Repository:</strong> <a href="https://github.com/sejalrivival/CanIBuyanAI" style="color: #ff6b6b;">sejalrivival/CanIBuyanAI</a>
+        </p>
+    </div>
+</body>
+</html>

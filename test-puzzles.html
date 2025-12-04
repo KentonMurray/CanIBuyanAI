@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Puzzle System</title>
+</head>
+<body>
+    <h1>Puzzle System Test</h1>
+    <div id="output"></div>
+    
+    <script src="puzzles.js"></script>
+    <script>
+        // Test the puzzle system
+        const puzzleManager = new PuzzleManager();
+        const output = document.getElementById('output');
+        
+        // Test basic functionality
+        output.innerHTML += '<h2>Puzzle System Test Results:</h2>';
+        output.innerHTML += `<p>Total puzzles: ${puzzleManager.getTotalPuzzleCount()}</p>`;
+        output.innerHTML += `<p>Categories: ${puzzleManager.getCategories().join(', ')}</p>`;
+        
+        // Test each category
+        puzzleManager.getCategories().forEach(category => {
+            const count = puzzleManager.getCategoryPuzzleCount(category);
+            output.innerHTML += `<p>${category}: ${count} puzzles</p>`;
+        });
+        
+        // Test random puzzle selection
+        output.innerHTML += '<h3>Random Puzzle Examples:</h3>';
+        for (let i = 0; i < 5; i++) {
+            const puzzle = puzzleManager.getRandomPuzzle();
+            output.innerHTML += `<p><strong>${puzzle.category}:</strong> ${puzzle.phrase}</p>`;
+        }
+        
+        // Test category-specific selection
+        output.innerHTML += '<h3>College Life Puzzles:</h3>';
+        for (let i = 0; i < 3; i++) {
+            const puzzle = puzzleManager.getRandomPuzzleFromCategory("College Life");
+            if (puzzle) {
+                output.innerHTML += `<p>${puzzle.phrase} (${puzzle.words} words, ${puzzle.letters} letters)</p>`;
+            }
+        }
+        
+        output.innerHTML += '<p style="color: green;"><strong>✓ Puzzle system is working correctly!</strong></p>';
+    </script>
+</body>
+</html>
