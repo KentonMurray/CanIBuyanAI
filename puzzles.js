@@ -244,6 +244,27 @@ class PuzzleManager {
         
         return results;
     }
+
+    // Helper function to add new puzzles easily
+    addPuzzle(category, phrase, words, letters, firstWordLetters) {
+        if (!this.puzzles[category]) {
+            this.puzzles[category] = [];
+        }
+        this.puzzles[category].push({
+            phrase: phrase.toUpperCase(),
+            words: words,
+            letters: letters,
+            firstWordLetters: firstWordLetters
+        });
+        console.log(`Added puzzle "${phrase}" to category "${category}"`);
+    }
+
+    // Helper function to add multiple puzzles at once
+    addPuzzles(category, puzzleArray) {
+        puzzleArray.forEach(puzzle => {
+            this.addPuzzle(category, puzzle.phrase, puzzle.words, puzzle.letters, puzzle.firstWordLetters);
+        });
+    }
 }
 
 // Export for use in other files
