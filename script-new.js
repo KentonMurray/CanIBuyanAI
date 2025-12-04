@@ -25,6 +25,12 @@ class WheelOfFortuneGame {
         // Initialize the new puzzle manager
         this.puzzleManager = new PuzzleManager();
         
+        // Wheel configuration (24 sections, matching create_accurate_wheel.py)
+        // 0 = LOSE TURN, -1 = BANKRUPT
+        this.wheelSections = [0, -1, 500, 550, 600, 650, 700, 750, 800, 850, 900, -1, 
+                             500, 550, 600, 650, 700, 750, 800, 850, 900, 500, 550, 600];
+        this.currentWheelRotation = 0; // Track current wheel rotation
+        
         // Log puzzle statistics
         console.log(`Puzzle System Loaded:`);
         console.log(`- Total puzzles: ${this.puzzleManager.getTotalPuzzleCount()}`);
@@ -358,6 +364,70 @@ class WheelOfFortuneGame {
         return this.gameState.players[this.gameState.currentPlayerIndex];
     }
 
+    // Calculate the rotation angle needed to land on a specific wheel section
+    calculateWheelRotation(targetValue) {
+        // Find all sections with the target value
+        const matchingSections = [];
+        this.wheelSections.forEach((value, index) => {
+            if (value === targetValue) {
+                matchingSections.push(index);
+            }
+        });
+        
+        if (matchingSections.length === 0) {
+            console.error('Target value not found on wheel:', targetValue);
+            return 1800; // Default fallback
+        }
+        
+        // Pick a random matching section
+        const targetSection = matchingSections[Math.floor(Math.random() * matchingSections.length)];
+        
+        // Calculate angle for this section (24 sections = 15 degrees each)
+        const degreesPerSection = 360 / this.wheelSections.length; // 15 degrees
+        
+        // The wheel starts with section 0 at the top (pointer position)
+        // We want to rotate so the target section ends up at the pointer
+        // Section angles: 0=0°, 1=15°, 2=30°, etc. (clockwise)
+        const sectionAngle = targetSection * degreesPerSection;
+        
+        // To get the target section to the pointer (top), we need to rotate
+        // the wheel counter-clockwise by the section's angle
+        const targetAngle = -sectionAngle;
+        
+        // Add multiple full rotations for dramatic effect (4-6 full spins)
+        const fullRotations = 4 + Math.random() * 2; // 4-6 rotations
+        const finalRotation = (fullRotations * 360) + targetAngle;
+        
+        console.log(`Target: ${targetValue}, Section: ${targetSection}, Angle: ${sectionAngle}°, Final rotation: ${finalRotation}°`);
+        
+        return finalRotation;
+    }
+
+    // Get a random wheel result based on realistic probabilities
+    getRandomWheelResult() {
+        // Create weighted array (more money values, fewer special spaces)
+        const weightedSections = [];
+        
+        this.wheelSections.forEach((value, index) => {
+            if (value === -1) { // BANKRUPT - lower probability
+                weightedSections.push(value);
+            } else if (value === 0) { // LOSE TURN - lower probability  
+                weightedSections.push(value);
+            } else { // Money values - higher probability
+                weightedSections.push(value);
+                weightedSections.push(value); // Add twice for higher probability
+            }
+        });
+        
+        const randomValue = weightedSections[Math.floor(Math.random() * weightedSections.length)];
+        
+        return {
+            type: randomValue === 0 ? 'lose_turn' : randomValue === -1 ? 'bankrupt' : 'money',
+            value: randomValue > 0 ? randomValue : 0,
+            message: randomValue === 0 ? 'Lose a Turn!' : randomValue === -1 ? 'Bankrupt!' : `$${randomValue}`
+        };
+    }
+
     async spinWheel() {
         const spinBtn = document.getElementById('spinButton');
         const wheelImg = document.getElementById('wheelImage');
@@ -365,46 +435,29 @@ class WheelOfFortuneGame {
         if (!spinBtn || !wheelImg) return;
         
         spinBtn.disabled = true;
-        wheelImg.classList.add('spinning');
         
-        try {
-            const response = await fetch(`${this.backendUrl}/api/wheel/spin`);
-            const result = await response.json();
-            
-            setTimeout(() => {
-                wheelImg.classList.remove('spinning');
-                this.handleSpinResult(result);
-                spinBtn.disabled = false;
-            }, 2000);
-            
-        } catch (error) {
-            console.error('Error spinning wheel:', error);
-            // Fallback local spin with more realistic wheel values
-            const wheelValues = [
-                { type: 'money', value: 500 },
-                { type: 'money', value: 600 },
-                { type: 'money', value: 700 },
-                { type: 'money', value: 800 },
-                { type: 'money', value: 900 },
-                { type: 'money', value: 1000 },
-                { type: 'money', value: 2500 },
-                { type: 'lose_turn', value: 0 },
-                { type: 'bankrupt', value: 0 }
-            ];
-            
-            const result = wheelValues[Math.floor(Math.random() * wheelValues.length)];
-            
-            setTimeout(() => {
-                wheelImg.classList.remove('spinning');
-                this.handleSpinResult({
-                    type: result.type,
-                    value: result.value,
-                    message: result.type === 'lose_turn' ? 'Lose a Turn!' : 
-                            result.type === 'bankrupt' ? 'Bankrupt!' : `$${result.value}`
-                });
-                spinBtn.disabled = false;
-            }, 2000);
-        }
+        // Get random result first
+        const result = this.getRandomWheelResult();
+        
+        // Calculate the exact rotation needed for this result
+        const targetRotation = this.calculateWheelRotation(
+            result.type === 'lose_turn' ? 0 : 
+            result.type === 'bankrupt' ? -1 : 
+            result.value
+        );
+        
+        // Apply the calculated rotation with animation
+        wheelImg.style.transition = 'transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        wheelImg.style.transform = `rotate(${this.currentWheelRotation + targetRotation}deg)`;
+        
+        // Update current rotation for next spin
+        this.currentWheelRotation += targetRotation;
+        
+        // Handle the result after animation completes
+        setTimeout(() => {
+            this.handleSpinResult(result);
+            spinBtn.disabled = false;
+        }, 3000);
     }
 
     handleSpinResult(result) {

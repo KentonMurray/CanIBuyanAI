@@ -813,16 +813,7 @@ header h1 {
 
 /* Animation Classes */
 .spinning {
-    animation: spin 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(1800deg); /* 5 full rotations */
-    }
+    /* Spinning animation now handled by JavaScript for accuracy */
 }
 
 .fade-in {
