@@ -263,7 +263,21 @@ class FreeAIWrapper:
         # Prepare format parameters
         format_params = {'player': player_name}
         
-        # Handle specific details
+        # Parse details string to extract letter and count information
+        if details:
+            # Extract letter from details like "letter: A, count: 2"
+            import re
+            letter_match = re.search(r'letter:\s*([A-Z])', details)
+            if letter_match:
+                format_params['letter'] = letter_match.group(1)
+            
+            count_match = re.search(r'count:\s*(\d+)', details)
+            if count_match:
+                count = int(count_match.group(1))
+                format_params['count'] = count
+                format_params['are'] = "are" if count != 1 else "is"
+        
+        # Handle specific details from action dict (legacy support)
         if 'letter' in action:
             format_params['letter'] = action['letter']
         
@@ -275,10 +289,19 @@ class FreeAIWrapper:
         # Only format with available parameters
         try:
             commentary = template.format(**format_params)
-        except KeyError:
+        except KeyError as e:
             # If template has missing parameters, use a safe fallback
-            safe_template = template.replace('{letter}', 'that letter').replace('{count}', 'some').replace('{are}', 'are')
-            commentary = safe_template.format(player=player_name)
+            missing_key = str(e).strip("'")
+            safe_template = template
+            
+            if missing_key == 'letter':
+                safe_template = safe_template.replace('{letter}', 'that letter')
+            if missing_key == 'count':
+                safe_template = safe_template.replace('{count}', 'some')
+            if missing_key == 'are':
+                safe_template = safe_template.replace('{are}', 'are')
+                
+            commentary = safe_template.format(**{k: v for k, v in format_params.items() if k != missing_key})
         
         return commentary
     

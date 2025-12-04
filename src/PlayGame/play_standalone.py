@@ -93,13 +93,20 @@ class StandaloneHost:
         
         template = random.choice(PAT_COMMENTARY[action_type])
         
-        # Fill in template variables
-        commentary = template.format(
-            player=player_name,
-            letter=kwargs.get('letter', ''),
-            count=kwargs.get('count', 0),
-            winnings=kwargs.get('winnings', 0)
-        )
+        # Fill in template variables with safe defaults
+        try:
+            commentary = template.format(
+                player=player_name,
+                letter=kwargs.get('letter', 'X'),
+                count=kwargs.get('count', 1),
+                winnings=kwargs.get('winnings', 0)
+            )
+        except KeyError:
+            # If template has missing parameters, use a safe version
+            safe_template = template.replace('{letter}', kwargs.get('letter', 'that letter'))
+            safe_template = safe_template.replace('{count}', str(kwargs.get('count', 'some')))
+            safe_template = safe_template.replace('{winnings}', str(kwargs.get('winnings', '0')))
+            commentary = safe_template.format(player=player_name)
         
         print(f"🎙️ Pat Sajak: {commentary}")
         
