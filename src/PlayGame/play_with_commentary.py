@@ -10,10 +10,35 @@ import sys
 import time
 import ascii_wheel
 from smart_player import computer_turn_smart, computer_turn_smart_conservative, computer_turn_smart_aggressive
-from interactive_host import InteractiveHost
 
-# Global interactive host instance
-interactive_host = InteractiveHost()
+# Try to import and initialize interactive host
+try:
+    from interactive_host import InteractiveHost
+    interactive_host = InteractiveHost()
+    print("🆓 Interactive Host initialized with FREE AI!")
+except ImportError as e:
+    print(f"📦 Interactive Host not available: {e}")
+    print("   Running in basic mode without commentary")
+    interactive_host = None
+except Exception as e:
+    print(f"⚠️ Error initializing Interactive Host: {e}")
+    print("   Running in basic mode without commentary")
+    interactive_host = None
+
+def safe_log_action(action_type, player_num, details):
+    """Safely log game action if interactive host is available"""
+    if interactive_host:
+        interactive_host.log_game_action(action_type, player_num, details)
+
+def safe_enable_interactive_mode():
+    """Safely enable interactive mode if interactive host is available"""
+    if interactive_host:
+        interactive_host.enable_interactive_mode()
+
+def safe_generate_victory_speech(player_num, winnings):
+    """Safely generate victory speech if interactive host is available"""
+    if interactive_host:
+        interactive_host.generate_victory_speech(player_num, winnings)
 
 def computer_turn(showing, winnings, previous_guesses, turn):
     """Basic computer turn with commentary integration"""
@@ -26,26 +51,26 @@ def computer_turn(showing, winnings, previous_guesses, turn):
             if winnings[(turn % 3)] < 250:
                 continue
             else:
-                interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
+                safe_log_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
                 print("Computer bought:", character)
                 winnings[(turn % 3)] = winnings[(turn % 3)] - 250
                 break
         # Want to choose a consonant ... so spins wheel
-        interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+        safe_log_action('spin', turn % 3, f'spun wheel')
         dollar = spin_wheel()
         if dollar == 0:
-            interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+            safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
             print("Computer lost a turn")
             character = "_"
             break
         elif dollar == -1:
-            interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+            safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
             print("Computer went bankrupt")
             winnings[(turn % 3)] = 0
             character = "_"
             break
         else:
-            interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
+            safe_log_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
             print("Computer guessed:", character)
             break
     return character, dollar
@@ -61,26 +86,26 @@ def computer_turn_morse(showing, winnings, previous_guesses, turn):
             if winnings[(turn % 3)] < 250:
                 continue
             else:
-                interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
+                safe_log_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
                 print("Computer bought:", character)
                 winnings[(turn % 3)] = winnings[(turn % 3)] - 250
                 break
         # Want to choose a consonant ... so spins wheel
-        interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+        safe_log_action('spin', turn % 3, f'spun wheel')
         dollar = spin_wheel()
         if dollar == 0:
-            interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+            safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
             print("Computer lost a turn")
             character = "_"
             break
         elif dollar == -1:
-            interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+            safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
             print("Computer went bankrupt")
             winnings[(turn % 3)] = 0
             character = "_"
             break
         else:
-            interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
+            safe_log_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
             print("Computer guessed:", character)
             break
     return character, dollar
@@ -96,26 +121,26 @@ def computer_turn_oxford(showing, winnings, previous_guesses, turn):
             if winnings[(turn % 3)] < 250:
                 continue
             else:
-                interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
+                safe_log_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
                 print("Computer bought:", character)
                 winnings[(turn % 3)] = winnings[(turn % 3)] - 250
                 break
         # Want to choose a consonant ... so spins wheel
-        interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+        safe_log_action('spin', turn % 3, f'spun wheel')
         dollar = spin_wheel()
         if dollar == 0:
-            interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+            safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
             print("Computer lost a turn")
             character = "_"
             break
         elif dollar == -1:
-            interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+            safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
             print("Computer went bankrupt")
             winnings[(turn % 3)] = 0
             character = "_"
             break
         else:
-            interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
+            safe_log_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
             print("Computer guessed:", character)
             break
     return character, dollar
@@ -164,24 +189,24 @@ def computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn):
     
     if guess != "_":
         if is_vowel(guess):
-            interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {guess}, cost: $250')
+            safe_log_action('buy_vowel', turn % 3, f'letter: {guess}, cost: $250')
             print("Computer bought:", guess)
             winnings[(turn % 3)] = winnings[(turn % 3)] - 250
             return guess, dollar
         else:
-            interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+            safe_log_action('spin', turn % 3, f'spun wheel')
             dollar = spin_wheel()
             if dollar == 0:
-                interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+                safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
                 print("Computer lost a turn")
                 guess = "_"
             elif dollar == -1:
-                interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+                safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
                 print("Computer went bankrupt")
                 winnings[(turn % 3)] = 0
                 guess = "_"
             else:
-                interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {guess}, value: ${dollar}')
+                safe_log_action('guess_consonant', turn % 3, f'letter: {guess}, value: ${dollar}')
                 print("Computer guessed:", guess)
             return guess, dollar
 
@@ -209,24 +234,24 @@ def computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn):
     
     if guess != "_":
         if is_vowel(guess):
-            interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {guess}, cost: $250')
+            safe_log_action('buy_vowel', turn % 3, f'letter: {guess}, cost: $250')
             print("Computer bought:", guess)
             winnings[(turn % 3)] = winnings[(turn % 3)] - 250
             return guess, dollar
         else:
-            interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+            safe_log_action('spin', turn % 3, f'spun wheel')
             dollar = spin_wheel()
             if dollar == 0:
-                interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+                safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
                 print("Computer lost a turn")
                 guess = "_"
             elif dollar == -1:
-                interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+                safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
                 print("Computer went bankrupt")
                 winnings[(turn % 3)] = 0
                 guess = "_"
             else:
-                interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {guess}, value: ${dollar}')
+                safe_log_action('guess_consonant', turn % 3, f'letter: {guess}, value: ${dollar}')
                 print("Computer guessed:", guess)
             return guess, dollar
 
@@ -239,26 +264,26 @@ def computer_turn_trigrams_bigrams(showing, winnings, previous_guesses, turn):
             if winnings[(turn % 3)] < 250:
                 continue
             else:
-                interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
+                safe_log_action('buy_vowel', turn % 3, f'letter: {character}, cost: $250')
                 print("Computer bought:", character)
                 winnings[(turn % 3)] = winnings[(turn % 3)] - 250
                 break
         # Want to choose a consonant ... so spins wheel
-        interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+        safe_log_action('spin', turn % 3, f'spun wheel')
         dollar = spin_wheel()
         if dollar == 0:
-            interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+            safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
             print("Computer lost a turn")
             character = "_"
             break
         elif dollar == -1:
-            interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+            safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
             print("Computer went bankrupt")
             winnings[(turn % 3)] = 0
             character = "_"
             break
         else:
-            interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
+            safe_log_action('guess_consonant', turn % 3, f'letter: {character}, value: ${dollar}')
             print("Computer guessed:", character)
             break
     return character, dollar
@@ -294,12 +319,12 @@ def human_turn(showing, winnings, previous_guesses, turn, puzzle):
     # Player decisions
     if decision == "3":
         solve = input("Your guess to solve: ...... ").upper()
-        interactive_host.log_game_action('solve_attempt', turn % 3, f'attempted solve: {solve}')
+        safe_log_action('solve_attempt', turn % 3, f'attempted solve: {solve}')
         if solve == puzzle:
             print("YOU WIN!")
             print("Player", turn % 3, "won!")
             print("Winnings:", winnings)
-            interactive_host.generate_victory_speech(turn % 3, winnings[turn % 3])
+            safe_generate_victory_speech(turn % 3, winnings[turn % 3])
             exit()
         else:
             print("Wrong ... next player")
@@ -316,20 +341,20 @@ def human_turn(showing, winnings, previous_guesses, turn, puzzle):
                 is_one_vowel = is_vowel(vowel)
             if not is_one_vowel:
                 print("Not a vowel")
-        interactive_host.log_game_action('buy_vowel', turn % 3, f'letter: {vowel}, cost: $250')
+        safe_log_action('buy_vowel', turn % 3, f'letter: {vowel}, cost: $250')
         guess = vowel
         dollar = 0
     elif decision == "1":
         # Spin wheel
-        interactive_host.log_game_action('spin', turn % 3, f'spun wheel')
+        safe_log_action('spin', turn % 3, f'spun wheel')
         dollar = spin_wheel()
         guess = ""
         if dollar == 0:
-            interactive_host.log_game_action('lose_turn', turn % 3, f'landed on Lose a Turn')
+            safe_log_action('lose_turn', turn % 3, f'landed on Lose a Turn')
             print("Sorry! Lose a turn. Next player")
             guess = "_"
         elif dollar == -1:
-            interactive_host.log_game_action('bankrupt', turn % 3, f'landed on BANKRUPT')
+            safe_log_action('bankrupt', turn % 3, f'landed on BANKRUPT')
             print("Oh No! Bankrupt!")
             winnings[(turn % 3)] = 0
             guess = "_"
@@ -347,7 +372,7 @@ def human_turn(showing, winnings, previous_guesses, turn, puzzle):
                 print("Not a consonant")
         
         if guess != "_":
-            interactive_host.log_game_action('guess_consonant', turn % 3, f'letter: {guess}, value: ${dollar}')
+            safe_log_action('guess_consonant', turn % 3, f'letter: {guess}, value: ${dollar}')
     
     return guess, dollar
 
@@ -393,7 +418,7 @@ def play_random_game(type_of_players, enable_commentary=True):
     
     # Enable interactive host mode if requested
     if enable_commentary:
-        interactive_host.enable_interactive_mode()
+        safe_enable_interactive_mode()
     
     # Play the game
     puzzle, clue, date, game_type = get_random_puzzle()
@@ -454,12 +479,12 @@ def play_random_game(type_of_players, enable_commentary=True):
                 turn = turn + 1
             elif len(correct_places) < 1:
                 if enable_commentary:
-                    interactive_host.log_game_action('wrong_guess', turn % 3, f'letter: {guess}, count: 0')
+                    safe_log_action('wrong_guess', turn % 3, f'letter: {guess}, count: 0')
                 print("Sorry, not in the puzzle ... next player")
                 turn = turn + 1
             else:
                 if enable_commentary:
-                    interactive_host.log_game_action('correct_guess', turn % 3, f'letter: {guess}, count: {len(correct_places)}')
+                    safe_log_action('correct_guess', turn % 3, f'letter: {guess}, count: {len(correct_places)}')
         
         winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
         for correct_letter in correct_places:
@@ -482,7 +507,7 @@ def play_random_game(type_of_players, enable_commentary=True):
             print("Player", turn % 3, "won!")
             print("Winnings:", winnings)
             if enable_commentary:
-                interactive_host.generate_victory_speech(turn % 3, winnings[turn % 3])
+                safe_generate_victory_speech(turn % 3, winnings[turn % 3])
             is_solved = True
         else:
             print("Wrong ... next player")
