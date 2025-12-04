@@ -54,10 +54,11 @@ header h1 {
 }
 
 .title-logo {
-    max-height: 80px;
+    max-height: 120px;
     height: auto;
-    max-width: 100%;
-    filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.5));
+    max-width: 90%;
+    filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.8));
+    margin: 10px 0;
 }
 
 /* Setup Screen Styles */
