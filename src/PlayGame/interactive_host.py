@@ -8,7 +8,16 @@ import json
 import time
 from typing import Dict, List, Tuple, Optional
 import os
-from chatgpt_wrapper import ChatGPTWrapper
+
+# Try to import ChatGPT wrapper, but use free AI if not available
+try:
+    from chatgpt_wrapper import ChatGPTWrapper
+    CHATGPT_AVAILABLE = True
+except ImportError:
+    CHATGPT_AVAILABLE = False
+    print("📦 OpenAI not installed - using FREE AI system instead!")
+
+from free_ai_wrapper import FreeAIWrapper
 
 class PlayerPersonality:
     """Represents a player's personality traits and speaking mannerisms"""

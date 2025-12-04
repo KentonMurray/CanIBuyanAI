@@ -3,12 +3,19 @@ ChatGPT Wrapper for Enhanced Commentary Generation
 Provides AI-powered commentary generation as an alternative to template-based responses
 """
 
-from openai import OpenAI
 import os
 import json
 import time
 from typing import Dict, List, Optional, Any
 import random
+
+# Try to import OpenAI, but handle gracefully if not available
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    OpenAI = None
 
 class ChatGPTWrapper:
     """Wrapper class for ChatGPT API integration"""
@@ -18,6 +25,11 @@ class ChatGPTWrapper:
         self.model = model
         self.use_ai = False
         self.client = None
+        
+        if not OPENAI_AVAILABLE:
+            print("📦 OpenAI package not installed - using template-based responses.")
+            print("   Install with: pip install openai")
+            return
         
         if self.api_key:
             try:

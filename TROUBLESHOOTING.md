@@ -34,12 +34,23 @@ chmod +x *.py
 chmod +x run_game.sh
 ```
 
-### ❌ "No module named 'interactive_host'"
+### ❌ "No module named 'openai'" or "No module named 'interactive_host'"
 
-**Solution: Make sure you're in the right directory**
+**Solution 1: Use the FREE version (no dependencies needed!)**
 ```bash
 cd /workspace/project/CanIBuyanAI/src/PlayGame
 python3 demo_commentary.py
+```
+
+**Solution 2: Make sure you're in the right directory**
+```bash
+cd /workspace/project/CanIBuyanAI/src/PlayGame
+python3 demo_commentary.py
+```
+
+**Solution 3: If you want premium ChatGPT features (optional)**
+```bash
+pip install openai
 ```
 
 ### ❌ Script starts but stops immediately
