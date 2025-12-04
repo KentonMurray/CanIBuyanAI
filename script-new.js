@@ -493,6 +493,8 @@ class WheelOfFortuneGame {
     processLetterGuess(letter) {
         this.gameState.usedLetters.push(letter);
         const currentPlayer = this.getCurrentPlayer();
+        const vowels = 'AEIOU';
+        const isVowel = vowels.includes(letter);
         
         // Check if letter is in puzzle
         const letterCount = (this.gameState.puzzle.phrase.match(new RegExp(letter, 'g')) || []).length;
@@ -505,11 +507,16 @@ class WheelOfFortuneGame {
                 }
             }
             
-            // Add money to round score
-            const earned = letterCount * this.gameState.wheelValue;
-            currentPlayer.roundScore += earned;
-            
-            this.updateGameMessage(`Great! There ${letterCount === 1 ? 'is' : 'are'} ${letterCount} ${letter}'s. You earned $${earned}!`);
+            // Add money to round score (only for consonants, not vowels)
+            if (isVowel) {
+                // Vowels don't earn money, they cost $250 (already deducted in buyVowel)
+                this.updateGameMessage(`Great! There ${letterCount === 1 ? 'is' : 'are'} ${letterCount} ${letter}'s. (Vowels don't earn money)`);
+            } else {
+                // Consonants earn money based on wheel value
+                const earned = letterCount * this.gameState.wheelValue;
+                currentPlayer.roundScore += earned;
+                this.updateGameMessage(`Great! There ${letterCount === 1 ? 'is' : 'are'} ${letterCount} ${letter}'s. You earned $${earned}!`);
+            }
             
             // Check if puzzle is solved
             if (!this.gameState.revealedLetters.includes('_')) {
@@ -518,7 +525,11 @@ class WheelOfFortuneGame {
             }
             
         } else {
-            this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle.`);
+            if (isVowel) {
+                this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle. (You still paid $250 for the vowel)`);
+            } else {
+                this.updateGameMessage(`Sorry, no ${letter}'s in the puzzle.`);
+            }
             this.nextPlayer();
         }
         
