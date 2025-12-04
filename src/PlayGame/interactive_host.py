@@ -34,8 +34,14 @@ class InteractiveHost:
         self.current_players = []
         self.game_actions_log = []
         
-        # Initialize ChatGPT wrapper
-        self.chatgpt_wrapper = ChatGPTWrapper(api_key=self.api_key)
+        # Initialize AI wrapper (try free AI first, then ChatGPT)
+        try:
+            from free_ai_wrapper import FreeAIWrapper
+            self.ai_wrapper = FreeAIWrapper()
+            print("🆓 Using FREE AI system - no API key needed!")
+        except Exception as e:
+            self.ai_wrapper = ChatGPTWrapper(api_key=self.api_key)
+            print("🤖 Using ChatGPT wrapper")
         
         # Initialize personality database
         self._init_personality_database()
@@ -226,7 +232,7 @@ class InteractiveHost:
             player_name = self.player_personalities[action['player']].name
         
         # Generate commentary using ChatGPT wrapper
-        commentary = self.chatgpt_wrapper.generate_pat_sajak_commentary(action, player_name)
+        commentary = self.ai_wrapper.generate_pat_sajak_commentary(action, player_name)
         
         print(f"\n🎙️ Pat Sajak: {commentary}")
         time.sleep(1)
@@ -293,21 +299,12 @@ class InteractiveHost:
         personality = self.player_personalities[player_num]
         
         # Generate commentary using ChatGPT wrapper
-        commentary = self.chatgpt_wrapper.generate_player_commentary(personality, action)
+        commentary = self.ai_wrapper.generate_player_commentary(action, personality.__dict__)
         
         print(f"\n🎭 {personality.name}: {commentary}")
         
         # Pat responds to player commentary
-        pat_responses = [
-            f"Thanks for that insight, {personality.name.split()[1]}!",
-            f"Well said, {personality.name.split()[1]}!",
-            f"I appreciate your perspective, {personality.name.split()[1]}!",
-            f"That's the competitive spirit, {personality.name.split()[1]}!",
-            f"You're keeping us entertained, {personality.name.split()[1]}!",
-            f"Great commentary, {personality.name.split()[1]}!"
-        ]
-        
-        pat_response = random.choice(pat_responses)
+        pat_response = self.ai_wrapper.generate_pat_response(commentary)
         print(f"🎙️ Pat Sajak: {pat_response}")
         time.sleep(1)
     
@@ -325,10 +322,17 @@ class InteractiveHost:
         print(f"\n🏆 VICTORY SPEECH 🏆")
         
         # Generate victory speech using ChatGPT wrapper
-        speech_lines = self.chatgpt_wrapper.generate_victory_speech(personality, final_winnings, actions)
+        speech_lines = self.ai_wrapper.generate_victory_speech(personality.name, final_winnings, actions)
         
         print(f"🎙️ Pat Sajak:")
-        for line in speech_lines:
+        if isinstance(speech_lines, str):
+            # If it's a string, split by newlines
+            lines = speech_lines.split('\n')
+        else:
+            # If it's already a list
+            lines = speech_lines
+            
+        for line in lines:
             if line.strip():  # Only print non-empty lines
                 print(f"{line}")
                 time.sleep(0.5)
