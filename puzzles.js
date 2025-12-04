@@ -42,6 +42,7 @@ class PuzzleManager {
                 { phrase: "COURSE CATALOG", words: 2, letters: 13, firstWordLetters: 6 },
                 { phrase: "COPIES OF MY TRANSCRIPTS", words: 4, letters: 21, firstWordLetters: 6 },
                 { phrase: "CHALLENGING CURRICULUM", words: 2, letters: 21, firstWordLetters: 11 },
+                { phrase: "CHALLENGING CIRRICULUM", words: 2, letters: 21, firstWordLetters: 11 },
                 { phrase: "BUYING TEXTBOOKS", words: 2, letters: 15, firstWordLetters: 6 },
                 { phrase: "BRINGING LAUNDRY HOME TO MOM AND DAD", words: 7, letters: 30, firstWordLetters: 8 },
                 { phrase: "BEING GRANTED A SCHOLARSHIP", words: 4, letters: 24, firstWordLetters: 5 },

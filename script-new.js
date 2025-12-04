@@ -417,10 +417,27 @@ class WheelOfFortuneGame {
         
         const randomValue = weightedSections[Math.floor(Math.random() * weightedSections.length)];
         
+        // Check for hidden lucky sections (rare chance for higher amounts)
+        let finalValue = randomValue;
+        let isLucky = false;
+        
+        if (randomValue > 0) { // Only for money values
+            const luckRoll = Math.random();
+            if (luckRoll < 0.05) { // 5% chance for lucky amounts
+                const luckyAmounts = [1500, 2000, 2500, 3000, 3500, 5000];
+                finalValue = luckyAmounts[Math.floor(Math.random() * luckyAmounts.length)];
+                isLucky = true;
+            }
+        }
+        
         return {
             type: randomValue === 0 ? 'lose_turn' : randomValue === -1 ? 'bankrupt' : 'money',
-            value: randomValue > 0 ? randomValue : 0,
-            message: randomValue === 0 ? 'Lose a Turn!' : randomValue === -1 ? 'Bankrupt!' : `$${randomValue}`
+            value: finalValue > 0 ? finalValue : 0,
+            wheelValue: randomValue, // The value that corresponds to the wheel section
+            isLucky: isLucky,
+            message: randomValue === 0 ? 'Lose a Turn!' : 
+                     randomValue === -1 ? 'Bankrupt!' : 
+                     isLucky ? `LUCKY SPIN! $${finalValue}` : `$${finalValue}`
         };
     }
 
@@ -435,11 +452,11 @@ class WheelOfFortuneGame {
         // Get random result first
         const result = this.getRandomWheelResult();
         
-        // Calculate the exact rotation needed for this result
+        // Calculate the exact rotation needed for this result (use wheelValue for accurate positioning)
         const targetRotation = this.calculateWheelRotation(
             result.type === 'lose_turn' ? 0 : 
             result.type === 'bankrupt' ? -1 : 
-            result.value
+            result.wheelValue || result.value
         );
         
         // Apply the calculated rotation with animation
