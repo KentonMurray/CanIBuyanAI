@@ -463,10 +463,12 @@ def play_random_game(type_of_players):
         return turn % 3  # Return winner
       else:
         print("Wrong solution ... next player")
+        time.sleep(2) # Let humans see what is going on
         turn = turn + 1
     # Double check that guess has not already been said (I've seen it on TV before)
     elif guess in previous_guesses and guess != "_":
       print("Sorry, that's already been guessed .... next player")
+      time.sleep(2) # Let humans see what is going on
       turn = turn + 1
     else:
       # Update board
@@ -486,6 +488,7 @@ def play_random_game(type_of_players):
         winnings[(turn % 3)] = winnings[(turn % 3)] + (dollar * len(correct_places))
         for correct_letter in correct_places:
           showing = showing[:correct_letter] + guess + showing[correct_letter + 1:]
+      time.sleep(2) # Let humans see what is going on
     
     # Only print status if we're not solving
     if not guess.startswith('SOLVE:'):
