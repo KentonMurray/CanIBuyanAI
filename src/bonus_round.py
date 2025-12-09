@@ -1,4 +1,4 @@
-from .utils import apply_free_letters, apply_player_letters
+from utils import apply_free_letters, apply_player_letters
 
 class BonusRoundGame:
     def __init__(self, solution: str):

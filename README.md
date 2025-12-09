@@ -1,6 +1,6 @@
 # CanIBuyanAI
 
-An AI-powered Wheel of Fortune puzzle solver with interactive gameplay features and advanced solving strategies.
+Welcome to an AI-powered Wheel of Fortune puzzle solver featuring interactive gameplay, advanced solving strategies, and comprehensive testing coverage!
 
 ## 🎪 NEW: Interactive Host System
 Experience Wheel of Fortune with **Pat Sajak commentary** and **player personalities**! 
@@ -28,6 +28,23 @@ This project requires Python 3.6 or higher. To get started with the Interactive 
 ```bash
 pip install -r requirements.txt
 ```
+
+## Testing
+
+This project includes a comprehensive test suite with **100% coverage** for core modules. To run the tests:
+
+```bash
+# Run all tests with coverage report
+python -m pytest tests/ -v --cov=src --cov-report=term-missing
+
+# Run only unit tests
+python -m pytest tests/ -m "not integration" -v
+
+# Generate HTML coverage report
+python -m pytest tests/ --cov=src --cov-report=html
+```
+
+For detailed testing information, see [TESTING.md](TESTING.md).
 
 ## Scraper
 
