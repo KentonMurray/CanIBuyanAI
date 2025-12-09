@@ -1,5 +1,6 @@
 # CanIBuyanAI
-This project tries to solve Wheel of Fortune puzzles.
+
+An AI-powered Wheel of Fortune puzzle solver with interactive gameplay features and advanced solving strategies.
 
 ## 🎪 NEW: Interactive Host System
 Experience Wheel of Fortune with **Pat Sajak commentary** and **player personalities**! 
@@ -22,21 +23,24 @@ python3 play_with_commentary.py --no-commentary  # Classic mode
 📖 **Full Documentation:** See [INTERACTIVE_HOST_README.md](INTERACTIVE_HOST_README.md)
 
 ## Requirements
-Tested using Python 3.6+. For the Interactive Host System:
+
+This project requires Python 3.6 or higher. To get started with the Interactive Host System, install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
 ## Scraper
+
 See the [Puzzle Scraper README](./src/PuzzleScraper/README.md) for details.
 
 Install the scraper dependencies:
 ```bash
 pip install requests beautifulsoup4
 ```
+
 ## How to Play
 
-Play a random Wheel of Fortune puzzle against simple computer strategies using [play_random_puzzle.py](./src/PlayGame/play_random_puzzle.py).
+Play a random Wheel of Fortune puzzle against various computer strategies using [play_random_puzzle.py](./src/PlayGame/play_random_puzzle.py).
 
 - Player types: `human`, `morse`, `oxford`, `trigram`, `smart`, `conservative`, `aggressive`, `solve_timing`, `solve_conservative`, `solve_aggressive`
 - As a human, you’ll be prompted each turn: 1 = Spin, 2 = Buy Vowel, 3 = Solve
@@ -44,7 +48,7 @@ Play a random Wheel of Fortune puzzle against simple computer strategies using [
 - **NEW: Solve Timing AI players** (`solve_timing`, `solve_conservative`, `solve_aggressive`) use entropy analysis and probability estimation to decide when to solve the puzzle early vs continuing to play
 - Run from the `src/PlayGame` directory so relative paths resolve (uses `../../data/puzzles/valid.csv` and `bigrams.txt`)
 
-Example:
+**Example:**
 ```bash
 cd src/PlayGame
 python3 play_random_puzzle.py human morse oxford
@@ -52,11 +56,11 @@ python3 play_random_puzzle.py human morse oxford
 python3 play_random_puzzle.py
 ```
 
-Tip: To visualize the wheel segment values used by the game, see the [ASCII Wheel](#ascii-wheel-optional) section below.
+**Tip:** To visualize the wheel segment values used by the game, see the [ASCII Wheel](#ascii-wheel-optional) section below.
 
 ## ASCII Wheel (Optional)
 
-Render an ASCII-art wheel of the segment values:
+Render an ASCII-art wheel of the segment values using [`ascii_wheel.py`](./src/PlayGame/ascii_wheel.py):
 
 ```bash
 cd src/PlayGame
@@ -73,13 +77,13 @@ The **SolveTimingAI** system represents a major advancement in Wheel of Fortune 
 
 ### Key Features
 
-#### 1. Entropy Analysis (`solve_decision.py`)
+#### 1. Entropy Analysis ([`solve_decision.py`](./src/PlayGame/solve_decision.py))
 - **`estimate_entropy(showing, category)`**: Calculates information entropy to measure puzzle uncertainty
 - **`estimate_solve_probability(showing, category, previous_guesses)`**: Estimates likelihood of successful solve
 - **`expected_value_of_spinning(showing, scores, player_index)`**: Computes expected value of continuing vs solving
 - **`should_solve_now(showing, scores, player_index, category)`**: Main decision function combining all factors
 
-#### 2. AI Agent Variants (`solve_timing_ai.py`)
+#### 2. AI Agent Variants ([`solve_timing_ai.py`](./src/PlayGame/solve_timing_ai.py))
 - **`solve_timing`**: Balanced approach to solve timing decisions
 - **`solve_conservative`**: Waits for high confidence before solving (80%+ probability)
 - **`solve_aggressive`**: Solves early with moderate confidence (60%+ probability)
@@ -109,7 +113,7 @@ python3 play_random_puzzle.py solve_conservative solve_aggressive smart
 
 ### Running Simulations
 
-Comprehensive AI evaluation with 10,000+ games:
+Comprehensive AI evaluation with 10,000+ games using [`solve_timing_experiments.py`](./src/Simulations/solve_timing_experiments.py):
 
 ```bash
 cd src/Simulations
@@ -156,6 +160,3 @@ The modular design allows researchers to:
 - Analyze component contributions to performance
 - Compare different risk tolerance profiles
 - Study entropy-based decision making
-
-# Wheel of Fortune — Bonus Round 
-
